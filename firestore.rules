@@ -21,17 +21,12 @@ service cloud.firestore {
       allow list: if false;
       allow write: if isMember();
     }
-    // Shared links page: everyone reads, only admins add/edit/remove.
-    match /links/{id} {
-      allow read: if isMember();
-      allow write: if isAdmin();
-    }
     match /activity/{id} {
       allow read, create: if isMember();
       allow update, delete: if false; // history can't be rewritten
     }
     match /{col}/{id} {
-      allow read, write: if isMember() && col in ['artists', 'contracts', 'events', 'equipment', 'locations', 'docs', 'meta'];
+      allow read, write: if isMember() && col in ['artists', 'contracts', 'events', 'equipment', 'locations', 'docs', 'links'];
     }
   }
 }

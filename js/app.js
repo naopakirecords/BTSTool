@@ -1,11 +1,11 @@
-import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=5";
-import { S, startSync, stopSync, onChange } from "./store.js?v=5";
-import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=5";
-import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=5";
-import { renderLinks } from "./links.js?v=5";
-import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=5";
-import { renderHelp } from "./help.js?v=5";
-import { esc, $, $$, modal, toast } from "./util.js?v=5";
+import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=6";
+import { S, startSync, stopSync, onChange } from "./store.js?v=6";
+import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=6";
+import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=6";
+import { renderLinks } from "./links.js?v=6";
+import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=6";
+import { renderHelp } from "./help.js?v=6";
+import { esc, $, $$, modal, toast } from "./util.js?v=6";
 
 const app = document.getElementById("app");
 const NAV = [

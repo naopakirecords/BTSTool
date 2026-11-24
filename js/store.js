@@ -1,6 +1,6 @@
-import { db, auth, collection, doc, onSnapshot, writeBatch, query, orderBy, limit, deleteDoc, setDoc } from "./firebase.js?v=5";
-import { CONFIG } from "./config.js?v=5";
-import { uid } from "./util.js?v=5";
+import { db, auth, collection, doc, onSnapshot, writeBatch, query, orderBy, limit, deleteDoc, setDoc } from "./firebase.js?v=6";
+import { CONFIG } from "./config.js?v=6";
+import { uid } from "./util.js?v=6";
 
 export const COLS = ["members", "artists", "contracts", "events", "equipment", "locations", "docs", "links"];
 export const S = { user: null, me: null, activity: [], loaded: new Set() };

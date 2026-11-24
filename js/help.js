@@ -99,7 +99,7 @@ export function renderHelp(root) {
   <p>Saved places (studio, client houses, outdoor spots) with address, usual travel time (pre-fills new bookings) and notes like parking and access. Addresses open in Google Maps.</p>
 
   <h2 id="h-links">12b. Links</h2>
-  <p>The <b>Links</b> page collects all our websites and accounts (the NAOPAKI site, socials, streaming profiles, tools) so anyone can open them in one tap or copy the address. Only <b>admins</b> can add, edit, reorder (with the Order number) or remove links; everyone else can open and copy them.</p>
+  <p>The <b>Links</b> page collects all our websites and accounts (the NAOPAKI site, socials, streaming profiles, tools) so anyone can open them in one tap or copy the address. Everyone on the team can add, edit, reorder (with the Order number) or remove links.</p>
 
   <h2 id="h-google">13. Google Calendar sync & tags</h2>
   <ul>
@@ -130,6 +130,7 @@ export function renderHelp(root) {
     <li><b>My account</b>: change your display name and password, and sign out.</li>
     <li>Forgot your password? On the sign-in screen press “Forgot password?” and you'll get a reset email.</li>
     <li><b>Admin only (Team)</b>: add a member (name + email → they get the set-password email), make someone admin, deactivate an account (they can no longer sign in or see anything), resend the password email.</li>
+    <li><b>Members</b> can add and edit everything in the tool (bookings, artists, contracts, documents, equipment, locations, links) but can't manage accounts. Nobody can change how the tool works from inside it – that's only possible through the company GitHub and Google accounts.</li>
   </ul>
 
   <h2 id="h-tips">19. Tips & FAQ</h2>

@@ -1,16 +1,16 @@
-import { S, byId, save, remove } from "./store.js?v=5";
-import { esc, $, $$, modal, toast, confirmBox, opt, val } from "./util.js?v=5";
+import { S, byId, save, remove } from "./store.js?v=6";
+import { esc, $, $$, modal, toast, confirmBox, opt, val } from "./util.js?v=6";
 
 export const LINK_CATS = ["Our websites", "Social media", "Streaming & music", "Tools & accounts", "Other"];
 const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (_) { return u; } };
 const fixUrl = (u) => (u && !/^https?:\/\//i.test(u) ? "https://" + u : u);
 
 export function renderLinks(root) {
-  const isAdmin = S.me?.role === "admin";
+  const isAdmin = true; // every team member can manage links
   const list = [...S.links].sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title));
   const cats = [...LINK_CATS, ...new Set(list.map((l) => l.category).filter((c) => c && !LINK_CATS.includes(c)))].filter((c) => list.some((l) => (l.category || "Other") === c));
   root.innerHTML = `<div class="topbar"><h1>Links</h1>${isAdmin ? '<button class="btn primary" data-new>+ Add link</button>' : ""}</div>
-    <p class="muted">All our websites and accounts in one place. ${isAdmin ? "Only admins can add or change links." : "Ask an admin to add or change a link."}</p>
+    <p class="muted">All our websites and accounts in one place. Everyone on the team can add, edit or remove links.</p>
     ${cats.map((c) => `<h2 style="margin-top:16px">${esc(c)}</h2><div class="grid">${list.filter((l) => (l.category || "Other") === c).map((l) => `
       <div class="card" style="margin:0;display:flex;gap:12px;align-items:flex-start">
         <img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(l.url))}&sz=64" alt="" width="32" height="32" style="border-radius:6px;flex:0 0 32px;background:var(--bg2)" loading="lazy" onerror="this.style.visibility='hidden'">
@@ -39,7 +39,7 @@ function openLinkEditor(id) {
     const o = val(m.el, "order"); d.order = o === "" ? 999 : Number(o);
     if (!d.title || !d.url) return toast("Name and web address are needed", true);
     try { new URL(d.url); } catch (_) { return toast("That web address doesn't look right", true); }
-    try { await save("links", id, d, d.title); toast("Saved"); m.close(); } catch (e) { toast(e.code === "permission-denied" ? "Only admins can change links" : e.message, true); }
+    try { await save("links", id, d, d.title); toast("Saved"); m.close(); } catch (e) { toast(e.message, true); }
   };
   id && ($("[data-del]", m.el).onclick = async () => { if (await confirmBox(`Remove the link “${l.title}”?`, "Remove")) { await remove("links", id, l.title); m.close(); } });
 }

@@ -103,12 +103,13 @@ export function renderHelp(root) {
 
   <h2 id="h-google">13. Google Calendar sync & tags</h2>
   <ul>
-    <li>Everything lives in one Google calendar called <b>BTS</b>. The tag at the start of the title says what it is:<br>
+    <li>Everything lives in <b>one shared Google calendar called BTS</b>, owned by the company account. Every team member gets edit access to it automatically when the admin adds them (Google sends an invite and it appears in your own Google Calendar app). <b>Your personal calendar is never synced</b> – only the BTS calendar is.</li>
+    <li>In the BTS calendar, the tag at the start of the title says what it is:<br>
       <code>Shoot: Valentino – Music video</code> → Production · <code>Rec: Valentino</code> → Audio · <code>Mgmt: Label meeting</code> → Management · <code>Meet: Weekly sync</code> → Team meetings.</li>
     <li><b>From the tool → Google:</b> within a few seconds of saving. The Google event has the location, team, equipment and notes in its description.</li>
     <li><b>From Google → the tool:</b> within about 1 minute. Two ways:
-      <ul><li>Add the event to the <b>BTS</b> calendar (choose “BTS” in the calendar dropdown when creating it). Tagged events go to the right tab; untagged ones land in <b>Unsorted</b> on Home, where you choose the type with one tap.</li>
-      <li>Or add it to your normal calendar <b>with a tag</b> (e.g. <code>Shoot: Valentino</code>). The tool moves it into the BTS calendar automatically. Untagged events in your normal calendar are personal and are never touched.</li></ul></li>
+      <ul><li>Add the event to the <b>BTS</b> calendar (choose “BTS” in the calendar dropdown when creating it – <i>not</i> your own calendar). Tagged events go to the right tab; untagged ones land in <b>Unsorted</b> on Home, where you choose the type with one tap.</li>
+      <li>Only on the company account itself: a tagged event (e.g. <code>Shoot: Valentino</code>) added to the company's main calendar is moved into BTS automatically. Team members' personal calendars are never read.</li></ul></li>
     <li>Changing the time, title or location in Google updates the tool. Deleting it in Google deletes it here.</li>
     <li>Team, equipment, artist and money can only be set in the tool – open the item here to add them.</li>
   </ul>

@@ -49,6 +49,7 @@ function doPost(e) {
     var user = verify_(req.idToken);
     switch (req.action) {
       case 'sync': syncNow(); return json_({ ok: true, message: 'Synced with Google Calendar' });
+      case 'shareCalendar': shareCalendar_(); return json_({ ok: true });
       case 'upload': {
         var blob = Utilities.newBlob(Utilities.base64Decode(req.data), req.mime || 'application/octet-stream', req.name || 'file');
         var f = folder_().createFile(blob);
@@ -107,12 +108,44 @@ function calendarId_() {
 function syncNow() {
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(25000)) return;
-  try { pushChanges_(); adoptFromPrimary_(); pullChanges_(); }
+  try {
+    pushChanges_(); adoptFromPrimary_(); pullChanges_();
+    var last = Number(PROPS.getProperty('LAST_SHARE') || 0);
+    if (Date.now() - last > 10 * 60 * 1000) { shareCalendar_(); PROPS.setProperty('LAST_SHARE', String(Date.now())); }
+  }
   finally { lock.releaseLock(); }
 }
 
 /**
- * Events added to the account's own (primary) calendar with a BTS tag in the title
+ * Keeps the shared BTS calendar in step with the team list:
+ * every active member gets edit access (Google emails them an invite and it appears
+ * in their own Google Calendar as "BTS"); deactivated members lose access.
+ * Only this one calendar is shared – nobody's personal calendar is ever read.
+ */
+function shareCalendar_() {
+  var cal = calendarId_();
+  var owner = Session.getEffectiveUser().getEmail().toLowerCase();
+  var acl = (Calendar.Acl.list(cal).items || []), byEmail = {};
+  acl.forEach(function (a) { if (a.scope && a.scope.type === 'user' && a.scope.value) byEmail[a.scope.value.toLowerCase()] = a; });
+  listDocs_('members').forEach(function (m) {
+    var email = String(m.id).toLowerCase(), has = byEmail[email];
+    if (email === owner) return;
+    if (m.active !== false) {
+      if (!has || (has.role !== 'writer' && has.role !== 'owner')) {
+        try {
+          Calendar.Acl.insert({ role: 'writer', scope: { type: 'user', value: email } }, cal, { sendNotifications: true });
+          patchDoc_('members', email, { calendarAccess: 'shared', calendarError: '' });
+        } catch (e) { patchDoc_('members', email, { calendarAccess: 'error', calendarError: String(e && e.message || e).slice(0, 200) }); }
+      } else if (m.calendarAccess !== 'shared') patchDoc_('members', email, { calendarAccess: 'shared', calendarError: '' });
+    } else if (has && has.role !== 'owner') {
+      try { Calendar.Acl.remove(cal, has.id); } catch (e) {}
+      patchDoc_('members', email, { calendarAccess: 'removed', calendarError: '' });
+    }
+  });
+}
+
+/**
+ * Company account only: events added to the COMPANY account's own (primary) calendar with a BTS tag in the title
  * ("Shoot:", "Rec:", "Mgmt:") are moved into the BTS calendar, so they show up in the tool.
  * Untagged personal events are never touched.
  */

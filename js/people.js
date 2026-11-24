@@ -1,8 +1,8 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript } from "./store.js?v=6";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=6";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=6";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=6";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=6";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=7";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=7";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=7";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=7";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=7";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {
@@ -206,17 +206,26 @@ export function renderManagement(root) {
 }
 
 // ─────────── Team (admin) ───────────
+function calBadge(x) {
+  if (x.role === "admin" && x.id === "naopakirecords@gmail.com") return '<span class="badge acc">📅 owns the BTS calendar</span>';
+  if (x.calendarAccess === "shared") return '<span class="badge ok">📅 BTS calendar shared</span>';
+  if (x.calendarAccess === "error") return `<span class="badge bad" title="${esc(x.calendarError || "")}">📅 calendar not shared – needs a Google account email</span>`;
+  if (x.calendarAccess === "removed") return '<span class="badge">📅 calendar access removed</span>';
+  return x.active === false ? "" : '<span class="badge warn">📅 sharing calendar…</span>';
+}
+const shareCal = () => scriptReady() && callScript("shareCalendar").catch((e) => console.warn(e));
 export function renderTeam(root) {
   const isAdmin = S.me?.role === "admin";
   const list = [...S.members].sort((a, b) => (a.role === "admin" ? -1 : 1) - (b.role === "admin" ? -1 : 1) || a.name.localeCompare(b.name));
   root.innerHTML = `<div class="topbar"><h1>Team</h1>${isAdmin ? '<button class="btn primary" data-new>+ Add member</button>' : ""}</div>
+    <div class="alert info">📅 <b>Shared calendar:</b> everyone on this list automatically gets edit access to the one shared <b>BTS</b> Google calendar (Google emails them an invite and it shows up in their own Google Calendar). Only that calendar is synced with the tool – nobody's personal calendar is ever read. For this, a member's email must be a Google account (Gmail or Google Workspace).</div>
     <p class="muted">Only people on this list can sign in. There is no public sign-up – an admin adds each person here and they get an email to set their own password.</p>
     <div class="card"><h2>What each access level can do</h2><div class="kv">
       <div><b>Member</b></div><div>Sees everything and can add, edit and delete shoots, sessions, meetings, artists, contracts, documents, equipment, locations and links. Can change their own name and password.</div>
       <div><b>Admin</b></div><div>Everything a member can do, plus: add and remove team accounts, give or take admin access, resend password emails, and use the Google sync tools (sync now, test the Sunday email).</div>
       <div><b>Nobody in the tool</b></div><div>How the tool itself works (its code, design, Firebase and Google settings) can't be changed from inside the tool at all – only through the company GitHub and Google accounts.</div></div></div>
     <div class="card flat"><div class="list">${list.map((x) => `<div class="item" style="cursor:default"><div class="body"><div class="t">${esc(x.name)} ${x.role === "admin" ? '<span class="badge acc">Admin</span>' : ""} ${x.active === false ? '<span class="badge bad">Deactivated</span>' : ""}</div>
-      <div class="meta"><span>${esc(x.id)}</span>${x.title ? `<span>${esc(x.title)}</span>` : ""}</div></div>
+      <div class="meta"><span>${esc(x.id)}</span>${x.title ? `<span>${esc(x.title)}</span>` : ""}${calBadge(x)}</div></div>
       ${isAdmin && x.id !== S.me.id ? `<div class="btns"><button class="btn sm" data-reset="${esc(x.id)}">Send password email</button><button class="btn sm" data-edit="${esc(x.id)}">Edit</button></div>` : ""}</div>`).join("")}</div></div>`;
   if (!isAdmin) return;
   $("[data-new]", root).onclick = () => memberEditor();
@@ -231,7 +240,7 @@ function memberEditor(id) {
     <div class="field"><label>Role in the team</label><input name="title" value="${esc(x.title || "")}" placeholder="e.g. Manager, Musician / producer"></div>
     <div class="row"><div class="field"><label>Access</label><select name="role">${opt("member", "Member – can add and edit all data", x.role)}${opt("admin", "Admin – can also manage accounts", x.role)}</select></div>
     ${id ? `<div class="field"><label>Status</label><select name="active">${opt("true", "Active", String(x.active !== false))}${opt("false", "Deactivated – cannot sign in", String(x.active !== false))}</select></div>` : ""}</div>
-    ${id ? "" : '<p class="muted">They will receive an email from Firebase with a link to set their own password (check spam). Then they sign in at this site with that email and password.</p>'}
+    ${id ? "" : '<p class="muted">They will receive two emails: one from Firebase (“Reset your password…”) with a link to set their own password – check spam – and one from Google Calendar inviting them to the shared <b>BTS</b> calendar. Then they sign in at this site with that email and password.</p>'}
     <div class="mf"><button class="btn" data-close>Cancel</button><button class="btn primary" data-save>${id ? "Save" : "Create account & send email"}</button></div>`);
   $("[data-save]", m.el).onclick = async (ev) => {
     const name = val(m.el, "name"), email = (id || val(m.el, "email")).toLowerCase();
@@ -243,6 +252,7 @@ function memberEditor(id) {
       await save("members", email, d, name);
       if (!id) { await createLogin(email); toast("Account created – password email sent to " + email); }
       else toast("Saved");
+      shareCal();
       m.close();
     } catch (e) { console.error(e); toast(e.message, true); ev.target.disabled = false; }
   };

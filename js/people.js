@@ -1,10 +1,10 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=9";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=9";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=9";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=9";
-import { showWelcome } from "./onboard.js?v=9";
-import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=9";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=9";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=10";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=10";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=10";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=10";
+import { showWelcome } from "./onboard.js?v=10";
+import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=10";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=10";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {

@@ -1,4 +1,4 @@
-import { showWelcome, showWhatsNew } from "./onboard.js?v=9";
+import { showWelcome, showWhatsNew, GCAL_HELP } from "./onboard.js?v=10";
 export function renderHelp(root) {
   root.innerHTML = `<div class="topbar"><h1>Help</h1><div class="btns"><button class="btn" data-news>✨ What&#39;s new</button><button class="btn primary" data-tour>▶ Welcome tour & install steps</button></div></div>
   <div class="card help">
@@ -8,7 +8,7 @@ export function renderHelp(root) {
     <li><a href="#h-shoot">4. Logging a shoot</a></li><li><a href="#h-rec">5. Logging a recording session</a></li><li><a href="#h-clash">6. Double bookings</a></li>
     <li><a href="#h-mgmt">7. Management</a></li><li><a href="#h-meet">7b. Team meetings</a></li><li><a href="#h-exp">7c. Expenses</a></li><li><a href="#h-art">8. Artists</a></li><li><a href="#h-contract">9. Contracts</a></li>
     <li><a href="#h-docs">10. Documents</a></li><li><a href="#h-eq">11. Equipment</a></li><li><a href="#h-loc">12. Locations</a></li>
-    <li><a href="#h-links">12b. Links</a></li><li><a href="#h-google">13. Google Calendar sync & tags</a></li><li><a href="#h-sum">14. Sunday summary</a></li><li><a href="#h-call">15. Call sheet links</a></li>
+    <li><a href="#h-links">12b. Links</a></li><li><a href="#h-google">13. Adding things from Google Calendar</a></li><li><a href="#h-sum">14. Sunday summary</a></li><li><a href="#h-call">15. Call sheet links</a></li>
     <li><a href="#h-money">16. Money</a></li><li><a href="#h-hist">17. History & activity log</a></li><li><a href="#h-acc">18. Accounts & passwords</a></li><li><a href="#h-tips">19. Tips & FAQ</a></li>
   </ul>
 
@@ -115,18 +115,9 @@ export function renderHelp(root) {
   <h2 id="h-links">12b. Links</h2>
   <p>The <b>Links</b> page collects all our websites and accounts (the NAOPAKI site, socials, streaming profiles, tools) so anyone can open them in one tap or copy the address. Everyone on the team can add, edit, reorder (with the Order number) or remove links.</p>
 
-  <h2 id="h-google">13. Google Calendar sync & tags</h2>
-  <ul>
-    <li>Everything lives in <b>one shared Google calendar called BTS</b>, owned by the company account. Every team member gets edit access to it automatically when the admin adds them (Google sends an invite and it appears in your own Google Calendar app). <b>Your personal calendar is never synced</b> – only the BTS calendar is.</li>
-    <li>In the BTS calendar, the tag at the start of the title says what it is:<br>
-      <code>Shoot: Valentino – Music video</code> → Production · <code>Rec: Valentino</code> → Audio · <code>Mgmt: Label meeting</code> → Management · <code>Meet: Weekly sync</code> → Team meetings.</li>
-    <li><b>From the tool → Google:</b> within a few seconds of saving. The Google event has the location, team, equipment and notes in its description.</li>
-    <li><b>From Google → the tool:</b> within about 1 minute. Two ways:
-      <ul><li>Add the event to the <b>BTS</b> calendar (choose “BTS” in the calendar dropdown when creating it – <i>not</i> your own calendar). Tagged events go to the right tab; untagged ones land in <b>Unsorted</b> on Home, where you choose the type with one tap.</li>
-      <li>Only on the company account itself: a tagged event (e.g. <code>Shoot: Valentino</code>) added to the company's main calendar is moved into BTS automatically. Team members' personal calendars are never read.</li></ul></li>
-    <li>Changing the time, title or location in Google updates the tool. Deleting it in Google deletes it here.</li>
-    <li>Team, equipment, artist and money can only be set in the tool – open the item here to add them.</li>
-  </ul>
+  <h2 id="h-google">13. Adding things from Google Calendar</h2>
+  <p>Everything lives in <b>one shared Google calendar called BTS</b>, owned by the company account. Every team member gets edit access to it automatically when the admin adds them. Only that calendar is synced, never anyone's personal calendar.</p>
+  ${GCAL_HELP}
 
   <h2 id="h-sum">14. Sunday summary</h2>
   <p>Every Sunday at 18:00 everyone on the team gets an email with next week's shoots, sessions and management items (day by day, with times, locations, team and gear), plus any clashes and contracts expiring soon. The same summary pops up in the tool the first time you open it on Sunday and is always on Home.</p>

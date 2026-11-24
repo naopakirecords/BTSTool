@@ -1,12 +1,12 @@
-import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=9";
-import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=9";
-import { allConflicts, equipmentBusy } from "./conflicts.js?v=9";
-import { unpaidDue, expenseRow, bindExpenseRows, occurrences } from "./expenses.js?v=9";
-import { contractRow, bindContractRows } from "./people.js?v=9";
+import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=10";
+import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=10";
+import { allConflicts, equipmentBusy } from "./conflicts.js?v=10";
+import { unpaidDue, expenseRow, bindExpenseRows, occurrences } from "./expenses.js?v=10";
+import { contractRow, bindContractRows } from "./people.js?v=10";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDT, fmtTime, fmtDateShort, money, daysUntil, startOfDay, addDays, todayISO, hoursOf,
   TYPES, EQUIP_CATS, EQUIP_PREFIX, CONDITIONS, EQUIP_STATUS, DOC_CATS, fromInputs, toDateInput,
-} from "./util.js?v=9";
+} from "./util.js?v=10";
 
 // ─────────── Weekly summary ───────────
 export function weekRange(ref = Date.now()) {

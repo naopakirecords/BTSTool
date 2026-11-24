@@ -1,11 +1,11 @@
-import { openDocUpload, openDoc } from "./misc.js?v=9";
-import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=9";
-import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=9";
-import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=9";
+import { openDocUpload, openDoc } from "./misc.js?v=10";
+import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=10";
+import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=10";
+import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=10";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, fmtDT, fmtDate, fmtDateShort, fmtTime, money, hoursOf, toDateInput, toTimeInput,
   fromInputs, TYPES, SUBTYPES, EQUIP_CATS, startOfDay, addDays, TYPE_ORDER, NO_GEAR, linkify,
-} from "./util.js?v=9";
+} from "./util.js?v=10";
 
 export const paidOf = (e) => (e.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
 export const owedOf = (e) => e.status === "cancelled" ? 0 : Math.max(0, (Number(e.price) || 0) - paidOf(e));

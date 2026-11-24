@@ -1,16 +1,17 @@
-import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=8";
-import { S, startSync, stopSync, onChange } from "./store.js?v=8";
-import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=8";
-import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=8";
-import { renderLinks } from "./links.js?v=8";
-import { showWelcome, seenWelcome } from "./onboard.js?v=8";
-import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=8";
-import { renderHelp } from "./help.js?v=8";
-import { esc, $, $$, modal, toast } from "./util.js?v=8";
+import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=9";
+import { S, startSync, stopSync, onChange } from "./store.js?v=9";
+import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=9";
+import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=9";
+import { renderExpenses, openExpenseEditor } from "./expenses.js?v=9";
+import { renderLinks } from "./links.js?v=9";
+import { showWelcome, seenWelcome, maybeWhatsNew } from "./onboard.js?v=9";
+import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=9";
+import { renderHelp } from "./help.js?v=9";
+import { esc, $, $$, modal, toast } from "./util.js?v=9";
 
 const app = document.getElementById("app");
 const NAV = [
-  ["home", "🏠", "Home"], ["calendar", "📅", "Calendar"], ["production", "🎬", "Production"], ["audio", "🎙️", "Audio"], ["management", "📋", "Management"], ["meetings", "🤝", "Team meetings"],
+  ["home", "🏠", "Home"], ["calendar", "📅", "Calendar"], ["production", "🎬", "Production"], ["audio", "🎙️", "Audio"], ["management", "📋", "Management"], ["meetings", "🤝", "Team meetings"], ["expenses", "💶", "Expenses"],
   ["artists", "🎤", "Artists"], ["docs", "📄", "Documents"], ["equipment", "🎥", "Equipment"], ["locations", "📍", "Locations"], ["links", "🔗", "Links"], "-",
   ["activity", "🕘", "Activity"], ["team", "👥", "Team"], ["help", "❓", "Help"], ["account", "⚙️", "My account"],
 ];
@@ -57,7 +58,7 @@ function shell() {
 function plusMenu() {
   const opts = [["🎬", "Shoot", () => openEventEditor(null, { type: "shoot" })], ["🎙️", "Recording session", () => openEventEditor(null, { type: "recording" })],
     ["📋", "Drop / gig / artist meeting", () => openEventEditor(null, { type: "management" })], ["🤝", "Team meeting", () => openEventEditor(null, { type: "meeting" })], ["🎤", "Artist", () => openArtistEditor()], ["📝", "Contract", () => openContractEditor()],
-    ["🎥", "Equipment item", () => openEquipEditor()], ["📄", "Upload document", () => openDocUpload()]];
+    ["💶", "Expense", () => openExpenseEditor()], ["🎥", "Equipment item", () => openEquipEditor()], ["📄", "Upload document", () => openDocUpload()]];
   const m = modal(`<div class="mh"><h2>Add new</h2><button class="x" data-close>×</button></div><div class="drawer">${opts.map((o, i) => `<a href="#" data-i="${i}">${o[0]} ${o[1]}</a>`).join("")}</div>`);
   $$("[data-i]", m.el).forEach((a) => a.onclick = (e) => { e.preventDefault(); m.close(); opts[a.dataset.i][2](); });
 }
@@ -84,6 +85,7 @@ function render() {
       case "equipment": renderEquipment(view); break;
       case "locations": renderLocations(view); break;
       case "links": renderLinks(view); break;
+      case "expenses": renderExpenses(view); break;
       case "activity": renderActivity(view); break;
       case "team": renderTeam(view); break;
       case "help": renderHelp(view); break;
@@ -117,7 +119,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
   shell();
-  startSync(() => { render(); if (!seenWelcome()) showWelcome({ onDone: maybeSundayPopup }); else maybeSundayPopup(); });
+  startSync(() => { render(); if (!seenWelcome()) showWelcome({ onDone: maybeSundayPopup }); else maybeWhatsNew(maybeSundayPopup); });
 });
 
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

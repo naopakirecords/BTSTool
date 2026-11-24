@@ -1,10 +1,11 @@
-import { openDocUpload, openDoc } from "./misc.js?v=8";
-import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=8";
-import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=8";
+import { openDocUpload, openDoc } from "./misc.js?v=9";
+import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=9";
+import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=9";
+import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=9";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, fmtDT, fmtDate, fmtDateShort, fmtTime, money, hoursOf, toDateInput, toTimeInput,
   fromInputs, TYPES, SUBTYPES, EQUIP_CATS, startOfDay, addDays, TYPE_ORDER, NO_GEAR, linkify,
-} from "./util.js?v=8";
+} from "./util.js?v=9";
 
 export const paidOf = (e) => (e.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
 export const owedOf = (e) => e.status === "cancelled" ? 0 : Math.max(0, (Number(e.price) || 0) - paidOf(e));
@@ -91,7 +92,7 @@ export function openEventEditor(id, preset = {}) {
     </div>
     ${ex && ex.source === "google" ? `<p class="dim" style="margin-top:12px">Added from Google Calendar.</p>` : ""}
     <div class="mf">
-      ${!isNew ? `<button class="btn danger" data-del>Delete</button><button class="btn" data-hist>History</button><button class="btn" data-share>Call sheet link</button>` : ""}
+      ${!isNew ? `<button class="btn danger" data-del>Delete</button><button class="btn" data-hist>History</button><button class="btn" data-share>Call sheet link</button><button class="btn" data-addexp2>💶 Add expense</button>` : ""}
       <span class="spacer"></span>
       <button class="btn" data-close>Cancel</button><button class="btn primary" data-save>Save</button>
     </div>`, { wide: true, onClose: () => unsub() });
@@ -289,6 +290,7 @@ export function openEventEditor(id, preset = {}) {
     };
     $("[data-hist]", el).onclick = () => historyModal(ex.id, ex.title);
     $("[data-share]", el).onclick = () => shareModal(ex.id);
+    $("[data-addexp2]", el).onclick = () => openExpenseEditor(null, { kind: "booking", eventId: ex.id, artistId: ex.artistId || "", date: toDateInput(ex.start), category: "" });
   }
 }
 
@@ -345,7 +347,7 @@ export function fmtChangeValue(f, v) {
   return String(v).length > 120 ? String(v).slice(0, 120) + "…" : String(v);
 }
 export function activityHTML(a) {
-  const col = { links: "link", events: "", artists: "artist", contracts: "contract", equipment: "equipment", locations: "location", docs: "document", members: "team member" }[a.col] ?? a.col;
+  const col = { expenses: "expense", links: "link", events: "", artists: "artist", contracts: "contract", equipment: "equipment", locations: "location", docs: "document", members: "team member" }[a.col] ?? a.col;
   const ev = a.col === "events" ? byId("events", a.docId) : null;
   const what = ev ? (TYPES[ev.type]?.label.toLowerCase() || "event") : col;
   const ch = (a.changes || []).filter((c) => c.f !== "deleted").slice(0, 8).map((c) => `<div class="change"><b>${esc(FIELD_NAMES[c.f] || c.f)}</b>: ${esc(fmtChangeValue(c.f, c.from))} → ${esc(fmtChangeValue(c.f, c.to))}</div>`).join("");
@@ -358,7 +360,7 @@ export function historyModal(docId, title) {
 }
 
 // ─────────── Calendar view ───────────
-let calMonth = null, calSel = null, calFilter = new Set(TYPE_ORDER);
+let calMonth = null, calSel = null, calFilter = new Set([...TYPE_ORDER, "expense"]);
 export function renderCalendar(root) {
   if (!calMonth) { const d = new Date(); calMonth = new Date(d.getFullYear(), d.getMonth(), 1).getTime(); }
   const first = new Date(calMonth);
@@ -369,35 +371,42 @@ export function renderCalendar(root) {
   for (let i = 0; i < 42; i++) {
     const day = startOfDay(addDays(startGrid, i)), next = addDays(day, 1);
     const de = evs.filter((e) => e.start < next && e.end > day).sort((a, b) => a.start - b.start);
+    const dx = calFilter.has("expense") ? expensesOnDay(toDateInput(day)) : [];
     const out = new Date(day).getMonth() !== first.getMonth();
     if (i >= 35 && out && i % 7 === 0) break;
     cells += `<div class="day ${out ? "out" : ""} ${day === today ? "today" : ""} ${day === calSel ? "sel" : ""}" data-day="${day}">
       <span class="n">${new Date(day).getDate()}</span>
       ${de.slice(0, 3).map((e) => `<span class="ev t-${esc(e.type || "unsorted")}" data-evc="${esc(e.id)}">${e.allDay ? "" : esc(fmtTime(e.start)) + " "}${esc(e.title)}</span>`).join("")}
       ${de.length > 3 ? `<span class="more">+${de.length - 3} more</span>` : ""}
-      <div class="dots">${de.slice(0, 6).map((e) => `<i class="t-${esc(e.type || "unsorted")}"></i>`).join("")}</div></div>`;
+      ${dx.slice(0, 2).map((o) => `<span class="ev t-expense" data-exc="${esc(o.x.id)}">💶 ${esc(o.x.title)}</span>`).join("")}${dx.length > 2 ? `<span class="more">+${dx.length - 2} payments</span>` : ""}
+      <div class="dots">${de.slice(0, 6).map((e) => `<i class="t-${esc(e.type || "unsorted")}"></i>`).join("")}${dx.length ? '<i class="t-expense"></i>' : ""}</div></div>`;
   }
   const sel = calSel ?? (startOfDay(Date.now()) >= calMonth && startOfDay(Date.now()) < addDays(calMonth, 31) ? today : null);
   const selEvents = sel ? evs.filter((e) => e.start < addDays(sel, 1) && e.end > sel).sort((a, b) => a.start - b.start) : [];
+  const selExp = sel && calFilter.has("expense") ? expensesOnDay(toDateInput(sel)) : [];
   root.innerHTML = `<div class="topbar"><h1>Calendar</h1>
       <div class="btns"><button class="btn" data-prev>‹</button><button class="btn" data-today>Today</button><button class="btn" data-next>›</button></div></div>
     <div class="btns" style="margin-bottom:10px"><h2 style="margin:0;flex:1">${esc(first.toLocaleDateString("en-GB", { month: "long", year: "numeric" }))}</h2>
-      <div class="chips">${TYPE_ORDER.map((t) => `<span class="chip ${calFilter.has(t) ? "on" : ""} t-${t}" data-f="${t}"><span class="tdot"></span>${TYPES[t].label}</span>`).join("")}</div></div>
+      <div class="chips">${TYPE_ORDER.map((t) => `<span class="chip ${calFilter.has(t) ? "on" : ""} t-${t}" data-f="${t}"><span class="tdot"></span>${TYPES[t].label}</span>`).join("")}<span class="chip ${calFilter.has("expense") ? "on" : ""} t-expense" data-f="expense"><span class="tdot"></span>Expenses</span></div></div>
     <div class="cal">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => `<div class="dow">${d}</div>`).join("")}${cells}</div>
     ${sel ? `<div class="card flat" style="margin-top:14px"><div style="padding:12px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)"><h2 style="margin:0;flex:1">${esc(fmtDate(sel))}</h2>
-      <button class="btn sm" data-add="shoot">+ Shoot</button><button class="btn sm" data-add="recording">+ Recording</button><button class="btn sm" data-add="management">+ Mgmt</button><button class="btn sm" data-add="meeting">+ Meeting</button></div>
-      <div class="list">${selEvents.map((e) => eventRow(e, { showDate: false })).join("") || '<div class="empty">Nothing planned.</div>'}</div></div>` : ""}`;
+      <button class="btn sm" data-add="shoot">+ Shoot</button><button class="btn sm" data-add="recording">+ Recording</button><button class="btn sm" data-add="management">+ Mgmt</button><button class="btn sm" data-add="meeting">+ Meeting</button><button class="btn sm" data-addexp>+ Expense</button></div>
+      <div class="list">${selEvents.map((e) => eventRow(e, { showDate: false })).join("")}${selExp.map((o) => expenseRow(o, { showDate: false })).join("")}${!selEvents.length && !selExp.length ? '<div class="empty">Nothing planned.</div>' : ""}</div></div>` : ""}`;
   $("[data-prev]", root).onclick = () => { const d = new Date(calMonth); calMonth = new Date(d.getFullYear(), d.getMonth() - 1, 1).getTime(); calSel = null; renderCalendar(root); };
   $("[data-next]", root).onclick = () => { const d = new Date(calMonth); calMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime(); calSel = null; renderCalendar(root); };
   $("[data-today]", root).onclick = () => { calMonth = null; calSel = startOfDay(Date.now()); renderCalendar(root); };
   $$("[data-f]", root).forEach((c) => c.onclick = () => { calFilter.has(c.dataset.f) ? calFilter.delete(c.dataset.f) : calFilter.add(c.dataset.f); renderCalendar(root); });
   $$("[data-day]", root).forEach((c) => c.onclick = (ev) => {
+    const exc = ev.target.closest("[data-exc]");
+    if (exc && window.innerWidth > 700) return openExpenseEditor(exc.dataset.exc);
     const evc = ev.target.closest("[data-evc]");
     if (evc && window.innerWidth > 700) return openEventEditor(evc.dataset.evc);
     calSel = Number(c.dataset.day); renderCalendar(root);
     if (window.innerWidth <= 700) root.querySelector(".card.flat")?.scrollIntoView({ behavior: "smooth" });
   });
   $$("[data-add]", root).forEach((b) => b.onclick = () => openEventEditor(null, { type: b.dataset.add, start: sel + 12 * 36e5 }));
+  bindExpenseRows(root);
+  const ax = $("[data-addexp]", root); ax && (ax.onclick = () => openExpenseEditor(null, { date: toDateInput(sel) }));
   bindEventRows(root);
 }
 

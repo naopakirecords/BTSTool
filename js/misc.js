@@ -1,11 +1,12 @@
-import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=8";
-import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=8";
-import { allConflicts, equipmentBusy } from "./conflicts.js?v=8";
-import { contractRow, bindContractRows } from "./people.js?v=8";
+import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=9";
+import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=9";
+import { allConflicts, equipmentBusy } from "./conflicts.js?v=9";
+import { unpaidDue, expenseRow, bindExpenseRows, occurrences } from "./expenses.js?v=9";
+import { contractRow, bindContractRows } from "./people.js?v=9";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDT, fmtTime, fmtDateShort, money, daysUntil, startOfDay, addDays, todayISO, hoursOf,
   TYPES, EQUIP_CATS, EQUIP_PREFIX, CONDITIONS, EQUIP_STATUS, DOC_CATS, fromInputs, toDateInput,
-} from "./util.js?v=8";
+} from "./util.js?v=9";
 
 // ─────────── Weekly summary ───────────
 export function weekRange(ref = Date.now()) {
@@ -25,7 +26,10 @@ export function summaryHTML([from, to]) {
     days += `<div style="margin-bottom:10px"><div class="group-label">${esc(fmtDateShort(d))}</div>${de.length ? `<div class="card flat" style="margin:0"><div class="list">${de.map((e) => eventRow(e, { showDate: false })).join("")}</div></div>` : '<div class="dim" style="font-size:.85rem">Free</div>'}</div>`;
   }
   const expiring = S.contracts.filter((c) => { const n = daysUntil(c.endDate); return n !== null && n >= 0 && n <= 60; });
-  return `<div class="stats" style="margin-bottom:12px">
+  const fI = toDateInput(from), tI = toDateInput(addDays(to, -1));
+  const exps = S.expenses.flatMap((x) => occurrences(x, fI, tI).map((d) => ({ x, d }))).sort((a, b) => a.d.localeCompare(b.d));
+  return `${exps.length ? `<div class="card flat" style="margin-bottom:12px"><div style="padding:10px 14px;border-bottom:1px solid var(--line)"><b>💶 Payments due (${esc(money(exps.reduce((s, o) => s + (Number(o.x.amount) || 0), 0)))})</b></div><div class="list">${exps.map((o) => expenseRow(o)).join("")}</div></div>` : ""}
+    <div class="stats" style="margin-bottom:12px">
       <div class="stat"><div class="v">${by("shoot").length}</div><div class="k">Shoots · ${hrs(by("shoot"))} h</div></div>
       <div class="stat"><div class="v">${by("recording").length}</div><div class="k">Sessions · ${hrs(by("recording"))} h</div></div>
       <div class="stat"><div class="v">${by("management").length}</div><div class="k">Management</div></div>
@@ -42,7 +46,7 @@ export function maybeSundayPopup() {
   const r = weekRange();
   const m = modal(`<div class="mh"><h2>Next week · ${esc(fmtDateShort(r[0]))} – ${esc(fmtDateShort(addDays(r[1], -1)))}</h2><button class="x" data-close>×</button></div>${summaryHTML(r)}
     <div class="mf"><button class="btn primary" data-close>Got it</button></div>`, { wide: true });
-  bindEventRows(m.el);
+  bindEventRows(m.el); bindExpenseRows(m.el);
 }
 
 // ─────────── Home ───────────
@@ -53,6 +57,7 @@ export function renderHome(root) {
   const unsorted = events().filter((e) => e.type === "unsorted" && e.end >= addDays(now, -30));
   const expiring = S.contracts.filter((c) => { const n = daysUntil(c.endDate); return n !== null && n <= 60 && n >= -14; }).sort((a, b) => a.endDate.localeCompare(b.endDate));
   const owed = events().filter((e) => owedOf(e) > 0 && e.end < now);
+  const dueExp = unpaidDue(7);
   const r = weekRange();
   const h = new Date().getHours();
   root.innerHTML = `<div class="topbar"><h1>Good ${h < 12 ? "morning" : h < 18 ? "afternoon" : "evening"}, ${esc(S.me.name.split(" ")[0])}</h1>
@@ -61,6 +66,7 @@ export function renderHome(root) {
     ${conflicts.length ? `<div class="card"><h2>⚠️ Double bookings (${conflicts.length})</h2>${conflicts.map((c) => `<div class="alert bad">${esc(c.event.title)} · ${esc(fmtDT(c.event.start))}: ${esc(c.msg)}<div class="btns"><button class="btn sm" data-open="${esc(c.event.id)}">Resolve</button></div></div>`).join("")}</div>` : ""}
     ${unsorted.length ? `<div class="card"><h2>❔ From Google Calendar – sort these (${unsorted.length})</h2><p class="muted" style="font-size:.88rem">These were added in Google without a tag. Pick where they belong (or add “Shoot:”, “Rec:”, “Mgmt:” or “Meet:” to the title in Google).</p>
       ${unsorted.map((e) => `<div class="alert info"><b>${esc(e.title)}</b> · ${esc(fmtDT(e.start))}<div class="btns">${["shoot", "recording", "management", "meeting"].map((t) => `<button class="btn sm" data-sort="${esc(e.id)}" data-t="${t}">${TYPES[t].icon} ${TYPES[t].label}</button>`).join("")}<button class="btn sm" data-open="${esc(e.id)}">Open</button></div></div>`).join("")}</div>` : ""}
+    ${dueExp.length ? `<div class="card flat"><div style="padding:12px 14px;border-bottom:1px solid var(--line)"><h2 style="margin:0">💶 Payments overdue or due this week (${esc(money(dueExp.reduce((s, o) => s + (Number(o.x.amount) || 0), 0)))})</h2></div><div class="list">${dueExp.map((o) => expenseRow(o)).join("")}</div></div>` : ""}
     ${expiring.length ? `<div class="card flat"><div style="padding:12px 14px;border-bottom:1px solid var(--line)"><h2 style="margin:0">📄 Contracts expiring soon</h2></div><div class="list">${expiring.map(contractRow).join("")}</div></div>` : ""}
     <div class="grid2">
       <div class="card flat"><div style="padding:12px 14px;border-bottom:1px solid var(--line)"><h2 style="margin:0">Coming up</h2></div><div class="list">${upcoming.map((e) => eventRow(e)).join("") || '<div class="empty">Nothing planned yet.</div>'}</div></div>
@@ -70,7 +76,7 @@ export function renderHome(root) {
   $$("[data-q]", root).forEach((b) => b.onclick = () => openEventEditor(null, { type: b.dataset.q }));
   $$("[data-open]", root).forEach((b) => b.onclick = () => openEventEditor(b.dataset.open));
   $$("[data-sort]", root).forEach((b) => b.onclick = async () => { const e = byId("events", b.dataset.sort); await save("events", e.id, { type: b.dataset.t, subtype: "" }, e.title); toast("Moved to " + TYPES[b.dataset.t].label); });
-  bindEventRows(root); bindContractRows(root);
+  bindEventRows(root); bindContractRows(root); bindExpenseRows(root);
 }
 
 // ─────────── Documents ───────────

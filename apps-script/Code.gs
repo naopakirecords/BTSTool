@@ -362,10 +362,40 @@ function sendSummary_(to) {
         ((e.docIds || []).length ? '<br>📄 ' + esc(e.docIds.map(function (d) { return L.docs[d] ? L.docs[d].name : '?'; }).join(', ')) : '') + '</div>';
     });
   }
+  var fromIso = fmt(from, 'yyyy-MM-dd'), toIso = fmt(to7 - 1, 'yyyy-MM-dd'), todayIso = fmt(today, 'yyyy-MM-dd');
+  var pays = [];
+  listDocs_('expenses').forEach(function (x) { expOcc_(x, fromIso, toIso).forEach(function (d) { pays.push({ x: x, d: d }); }); });
+  var overdue = [];
+  listDocs_('expenses').forEach(function (x) { expOcc_(x, x.date || todayIso, todayIso).forEach(function (d) { if (d < todayIso && !expPaid_(x, d)) overdue.push({ x: x, d: d }); }); });
+  if (pays.length || overdue.length) {
+    pays.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+    html += '<h3 style="margin-top:18px">💶 Payments</h3>' +
+      overdue.map(function (o) { return '<div style="color:#b91c1c">OVERDUE ' + esc(o.d) + ' · ' + esc(o.x.title) + ' · €' + Number(o.x.amount || 0).toFixed(2) + '</div>'; }).join('') +
+      pays.map(function (o) { return '<div>' + esc(o.d) + ' · ' + esc(o.x.title) + ' · €' + Number(o.x.amount || 0).toFixed(2) + (expPaid_(o.x, o.d) ? ' · paid' : ' · <b>unpaid</b>') + '</div>'; }).join('');
+  }
   var exp = listDocs_('contracts').filter(function (c) { if (!c.endDate) return false; var n = (Utilities.parseDate(c.endDate, CFG.TZ, 'yyyy-MM-dd').getTime() - today) / 864e5; return n >= 0 && n <= 60; });
   if (exp.length) html += '<h3 style="margin-top:18px">📄 Contracts expiring within 60 days</h3>' + exp.map(function (c) { return '<div>' + esc(L.artists[c.artistId] ? L.artists[c.artistId].name : '') + ' – ' + esc(c.title) + ' · ends ' + esc(c.endDate) + ' · renew: ' + esc(c.renew || 'undecided') + '</div>'; }).join('');
   html += '<p style="margin-top:22px"><a href="' + CFG.APP_URL + '" style="background:#3d7ef5;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none">Open BTS</a></p></div>';
   MailApp.sendEmail({ to: to.join(','), subject: 'BTS · Next week (' + fmt(from, 'd MMM') + ' – ' + fmt(to7 - 1, 'd MMM') + ')', htmlBody: html, name: 'BTS' });
+}
+function expPaid_(x, d) { return (!x.freq || x.freq === 'once') ? !!x.paid : (x.paidDates || []).indexOf(d) >= 0; }
+function expOcc_(x, from, to) {
+  if (!x.date) return [];
+  if (!x.freq || x.freq === 'once') return x.date >= from && x.date <= to ? [x.date] : [];
+  var out = [], end = x.endDate && x.endDate < to ? x.endDate : to, p = x.date.split('-').map(Number);
+  for (var k = 0; k < 2000; k++) {
+    var d;
+    if (x.freq === 'weekly') d = new Date(p[0], p[1] - 1, p[2] + 7 * k);
+    else {
+      var mo = x.freq === 'monthly' ? k : x.freq === 'quarterly' ? 3 * k : 12 * k;
+      var last = new Date(p[0], p[1] - 1 + mo + 1, 0).getDate();
+      d = new Date(p[0], p[1] - 1 + mo, Math.min(p[2], last));
+    }
+    var s = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    if (s > end) break;
+    if (s >= from) out.push(s);
+  }
+  return out;
 }
 function dayStart_(ms) { return Utilities.parseDate(Utilities.formatDate(new Date(ms), CFG.TZ, 'yyyy-MM-dd'), CFG.TZ, 'yyyy-MM-dd').getTime(); }
 function clashes_(evs) {

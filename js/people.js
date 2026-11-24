@@ -1,9 +1,10 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=8";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=8";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=8";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=8";
-import { showWelcome } from "./onboard.js?v=8";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=8";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=9";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=9";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=9";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=9";
+import { showWelcome } from "./onboard.js?v=9";
+import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=9";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=9";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {
@@ -45,6 +46,8 @@ export function renderArtist(root, id) {
   const past = s.evs.filter((e) => e.end < now).sort((x, y) => y.start - x.start);
   const contracts = S.contracts.filter((c) => c.artistId === id).sort((x, y) => (y.endDate || "").localeCompare(x.endDate || ""));
   const docs = S.docs.filter((d) => d.artistId === id);
+  const exps = S.expenses.filter((x) => x.artistId === id);
+  const spent = exps.reduce((s, x) => s + occurrences(x, x.date || "0000-01-01", todayISO()).length * (Number(x.amount) || 0), 0);
   const hist = S.activity.filter((x) => x.docId === id).slice(0, 15);
   const links = [["Instagram", a.instagram], ["TikTok", a.tiktok], ["YouTube", a.youtube], ["Spotify", a.spotify], ["Other", a.links]].filter((x) => x[1]);
   root.innerHTML = `<div class="topbar"><a href="#/artists" class="btn ghost">‹ Artists</a><h1>${esc(a.name)} ${a.managed ? '<span class="badge acc">★ Managed</span>' : '<span class="badge">Worked with</span>'}</h1>
@@ -55,7 +58,8 @@ export function renderArtist(root, id) {
       <div class="stat"><div class="v">${s.hours}</div><div class="k">Hours worked / booked</div></div>
       <div class="stat"><div class="v">${s.everManaged ? (a.managed ? "Yes – now" : "Yes – before") : "No"}</div><div class="k">Managed by us</div></div>
       <div class="stat"><div class="v">${esc(money(s.billed))}</div><div class="k">Total billed</div></div>
-      <div class="stat"><div class="v ${s.owed ? "money-pos" : "money-ok"}">${esc(money(s.owed))}</div><div class="k">Owes us</div></div></div>
+      <div class="stat"><div class="v ${s.owed ? "money-pos" : "money-ok"}">${esc(money(s.owed))}</div><div class="k">Owes us</div></div>
+      <div class="stat"><div class="v">${esc(money(spent))}</div><div class="k">Our expenses for them</div></div></div>
     <div class="grid2">
       <div>
         <div class="card"><h2>Profile</h2><div class="kv">
@@ -79,6 +83,8 @@ export function renderArtist(root, id) {
           <div class="list">${contracts.map(contractRow).join("") || '<div class="empty">No contracts.</div>'}</div></div>
         <div class="card flat"><div style="padding:12px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)"><h2 style="margin:0;flex:1">Documents</h2><button class="btn sm" data-up>+ Upload</button></div>
           <div class="list">${docs.map(docRow).join("") || '<div class="empty">No documents.</div>'}</div></div>
+        <div class="card flat"><div style="padding:12px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)"><h2 style="margin:0;flex:1">💶 Expenses</h2><button class="btn sm" data-newx>+ Expense</button></div>
+          <div class="list">${exps.map((x) => expenseRow({ x, d: x.freq === "once" ? x.date : null })).join("") || '<div class="empty">No expenses.</div>'}</div></div>
         <div class="card flat"><div style="padding:12px 14px;border-bottom:1px solid var(--line)"><h2 style="margin:0">Past work (${past.length})</h2></div>
           <div class="list">${past.map((e) => eventRow(e)).join("") || '<div class="empty">No past projects yet.</div>'}</div></div>
         <div class="card flat"><div style="padding:12px 14px;border-bottom:1px solid var(--line)"><h2 style="margin:0">Profile changes</h2></div>
@@ -89,7 +95,8 @@ export function renderArtist(root, id) {
   $$("[data-add]", root).forEach((b) => b.onclick = () => openEventEditor(null, { type: b.dataset.add, artistId: id }));
   $("[data-newc]", root).onclick = () => openContractEditor(null, { artistId: id });
   $("[data-up]", root).onclick = () => openDocUpload({ artistId: id });
-  bindEventRows(root); bindContractRows(root); bindDocRows(root);
+  bindEventRows(root); bindContractRows(root); bindDocRows(root); bindExpenseRows(root);
+  $("[data-newx]", root).onclick = () => openExpenseEditor(null, { kind: "artist", artistId: id });
 }
 
 export function openArtistEditor(id) {
@@ -222,7 +229,7 @@ export function renderTeam(root) {
     <div class="alert info">📅 <b>Shared calendar:</b> everyone on this list automatically gets edit access to the one shared <b>BTS</b> Google calendar (Google emails them an invite and it shows up in their own Google Calendar). Only that calendar is synced with the tool – nobody's personal calendar is ever read. For this, a member's email must be a Google account (Gmail or Google Workspace).</div>
     <p class="muted">Only people on this list can sign in. There is no public sign-up – an admin adds each person here and they get an email to set their own password.</p>
     <div class="card"><h2>What each access level can do</h2><div class="kv">
-      <div><b>Member</b></div><div>Sees everything and can add, edit and delete shoots, sessions, meetings, artists, contracts, documents, equipment, locations and links. Can change their own name and password.</div>
+      <div><b>Member</b></div><div>Sees everything and can add, edit and delete shoots, sessions, meetings, artists, contracts, expenses, documents, equipment, locations and links. Can change their own name and password.</div>
       <div><b>Admin</b></div><div>Everything a member can do, plus: add and remove team accounts, give or take admin access, resend password emails, and use the Google sync tools (sync now, test the Sunday email).</div>
       <div><b>Nobody in the tool</b></div><div>How the tool itself works (its code, design, Firebase and Google settings) can't be changed from inside the tool at all – only through the company GitHub and Google accounts.</div></div></div>
     <div class="card flat"><div class="list">${list.map((x) => `<div class="item" style="cursor:default"><div class="body"><div class="t">${esc(x.name)} ${x.role === "admin" ? '<span class="badge acc">Admin</span>' : ""} ${x.active === false ? '<span class="badge bad">Deactivated</span>' : ""}</div>

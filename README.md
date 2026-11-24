@@ -46,3 +46,6 @@ In Google Calendar, a title starting with `Shoot:`, `Rec:` or `Mgmt:` goes to Pr
 ## Releasing a change (cache-busting)
 Browsers cache files for ~10 minutes. After any change, bump the version everywhere in one go, e.g. from 5 to 6:
 `sed -i 's/?v=5/?v=6/g' index.html callsheet.html js/*.js`
+
+## Announcing updates to the team
+Add an entry to `WHATS_NEW` in `js/onboard.js` (and a section in `js/help.js`) with every new feature. Anyone who has already seen the welcome tour gets a one-time "What's new" pop-up on their next visit; it's always available under Help → What's new.

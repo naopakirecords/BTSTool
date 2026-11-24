@@ -26,7 +26,7 @@ service cloud.firestore {
       allow update, delete: if false; // history can't be rewritten
     }
     match /{col}/{id} {
-      allow read, write: if isMember() && col in ['artists', 'contracts', 'events', 'equipment', 'locations', 'docs', 'links'];
+      allow read, write: if isMember() && col in ['artists', 'contracts', 'events', 'equipment', 'locations', 'docs', 'links', 'expenses'];
     }
   }
 }

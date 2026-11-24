@@ -1,12 +1,12 @@
-import { showWelcome } from "./onboard.js?v=8";
+import { showWelcome, showWhatsNew } from "./onboard.js?v=9";
 export function renderHelp(root) {
-  root.innerHTML = `<div class="topbar"><h1>Help</h1><button class="btn primary" data-tour>▶ Welcome tour & install steps</button></div>
+  root.innerHTML = `<div class="topbar"><h1>Help</h1><div class="btns"><button class="btn" data-news>✨ What&#39;s new</button><button class="btn primary" data-tour>▶ Welcome tour & install steps</button></div></div>
   <div class="card help">
   <p>BTS is our private team tool. It keeps every shoot, recording session, artist, contract, document and piece of equipment in one place, and it stays in sync with our Google Calendar. Everything you change is saved instantly and appears on everyone's phone and computer within a second.</p>
   <ul class="toc">
     <li><a href="#h-start">1. Getting started</a></li><li><a href="#h-home">2. Home</a></li><li><a href="#h-cal">3. Calendar</a></li>
     <li><a href="#h-shoot">4. Logging a shoot</a></li><li><a href="#h-rec">5. Logging a recording session</a></li><li><a href="#h-clash">6. Double bookings</a></li>
-    <li><a href="#h-mgmt">7. Management</a></li><li><a href="#h-meet">7b. Team meetings</a></li><li><a href="#h-art">8. Artists</a></li><li><a href="#h-contract">9. Contracts</a></li>
+    <li><a href="#h-mgmt">7. Management</a></li><li><a href="#h-meet">7b. Team meetings</a></li><li><a href="#h-exp">7c. Expenses</a></li><li><a href="#h-art">8. Artists</a></li><li><a href="#h-contract">9. Contracts</a></li>
     <li><a href="#h-docs">10. Documents</a></li><li><a href="#h-eq">11. Equipment</a></li><li><a href="#h-loc">12. Locations</a></li>
     <li><a href="#h-links">12b. Links</a></li><li><a href="#h-google">13. Google Calendar sync & tags</a></li><li><a href="#h-sum">14. Sunday summary</a></li><li><a href="#h-call">15. Call sheet links</a></li>
     <li><a href="#h-money">16. Money</a></li><li><a href="#h-hist">17. History & activity log</a></li><li><a href="#h-acc">18. Accounts & passwords</a></li><li><a href="#h-tips">19. Tips & FAQ</a></li>
@@ -73,6 +73,19 @@ export function renderHelp(root) {
   </ol>
   <p>In Google the title starts with <code>Meet:</code> – you can also create one in Google with that tag. Meetings use the same clash check, so nobody can be booked on a shoot during a team meeting.</p>
 
+  <h2 id="h-exp">7c. Expenses</h2>
+  <p>Every cost the company has, in one list that everyone can see.</p>
+  <ol>
+    <li>Press <b>＋ → Expense</b>, <b>+ New expense</b> on the Expenses page, <b>+ Expense</b> on a calendar day or artist profile, or <b>💶 Add expense</b> inside a saved shoot/session.</li>
+    <li>Name and <b>amount</b> (€).</li>
+    <li><b>Type</b>: <b>🏢 Company / subscription</b> (software, rent, phone… anything the company uses), <b>🎤 Artist</b> (pick the artist), <b>🎬 Shoot / session</b> (pick the booking – its artist is linked automatically) or <b>Other</b>. Optional category (equipment, travel, food, marketing…).</li>
+    <li><b>How often</b>: <b>One-off</b>, or repeating <b>every week / month / 3 months / year</b>. For repeating costs the date is the first payment; add an end date if it stops (e.g. a cancelled subscription).</li>
+    <li><b>Paid?</b> One-off: tick <b>Paid</b>. Repeating: tick each payment date as it's paid. You can also press <b>Mark paid</b> on any expense in a list.</li>
+    <li>Optional: who paid it (company or a team member – handy for paying people back), payment method, notes.</li>
+  </ol>
+  <p><b>Where it shows:</b> every due date appears in the <b>Calendar</b> as 💶 (toggle with the “Expenses” chip); <b>Home</b> lists overdue payments and those due in the next 7 days; the weekly summary and Sunday email list the week's payments; artist profiles show what we've spent on that artist. The Expenses page shows what's due this month, the repeating cost per month and per year, and what's overdue, with tabs for the next 60 days, unpaid, repeating and everything.</p>
+  <p class="muted">New features are announced with a “What's new” pop-up the next time you open the tool, and are always listed under <b>Help → What's new</b>.</p>
+
   <h2 id="h-art">8. Artists</h2>
   <p>One shared profile per artist, used in every tab. That covers artists we manage (★) and artists we've just worked with, so their details can be reused next time.</p>
   <ul>
@@ -132,7 +145,7 @@ export function renderHelp(root) {
     <li><b>My account</b>: change your display name and password, and sign out.</li>
     <li>Forgot your password? On the sign-in screen press “Forgot password?” and you'll get a reset email.</li>
     <li><b>Admin only (Team)</b>: add a member (name + email → they get the set-password email), make someone admin, deactivate an account (they can no longer sign in or see anything), resend the password email.</li>
-    <li><b>Members</b> can add and edit everything in the tool (bookings, artists, contracts, documents, equipment, locations, links) but can't manage accounts. Nobody can change how the tool works from inside it – that's only possible through the company GitHub and Google accounts.</li>
+    <li><b>Members</b> can add and edit everything in the tool (bookings, artists, contracts, expenses, documents, equipment, locations, links) but can't manage accounts. Nobody can change how the tool works from inside it – that's only possible through the company GitHub and Google accounts.</li>
   </ul>
 
   <h2 id="h-tips">19. Tips & FAQ</h2>
@@ -145,5 +158,6 @@ export function renderHelp(root) {
   </ul>
   </div>`;
   root.querySelector('[data-tour]').onclick = () => showWelcome();
+  root.querySelector('[data-news]').onclick = () => showWhatsNew();
   root.querySelectorAll('.toc a').forEach((a) => a.onclick = (e) => { e.preventDefault(); root.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); });
 }

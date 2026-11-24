@@ -1,5 +1,7 @@
 # BTS – internal team tool
 
+**Live:** https://naopakirecords.github.io/BTSTool/ · **Repo:** naopakirecords/BTSTool · **Accounts:** everything runs on the company Google account naopakirecords@gmail.com (Firebase project, Apps Script "BTS Sync", BTS calendar, "BTS Documents" Drive folder). The old personal repo 0Frog2/BTS is archived.
+
 Private tool for the team: shoots, recording sessions, artist management, contracts, documents and equipment. It syncs two ways with Google Calendar. NAOPAKI is the public portfolio; **BTS is internal only**.
 
 - **App:** static site on GitHub Pages (`index.html`, `js/`, `css/`). Dark mode, works on phone and desktop, and can be added to the home screen.

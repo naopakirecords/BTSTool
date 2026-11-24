@@ -10,11 +10,11 @@
  * new Firebase project's id/key. See README.md.
  */
 const CFG = {
-  PROJECT_ID: 'bts-team-tool',
-  API_KEY: 'AIzaSyDxEKP6HRvLQVHMiuLLbTHW8lSRdIPS7Oc',
-  ADMIN_EMAIL: 'viktor4o123@gmail.com',
-  ADMIN_NAME: 'Viktor',
-  APP_URL: 'https://0frog2.github.io/BTS/',
+  PROJECT_ID: 'bts-tool',
+  API_KEY: 'AIzaSyAWFRcaTMp3KpUujrjHfi7_t3ad7C7xnaw',
+  ADMIN_EMAIL: 'naopakirecords@gmail.com',
+  ADMIN_NAME: 'NAOPAKI Admin',
+  APP_URL: 'https://naopakirecords.github.io/BTSTool/',
   CALENDAR_NAME: 'BTS',
   FOLDER_NAME: 'BTS Documents',
   TZ: 'Europe/Sofia',

@@ -8,15 +8,15 @@
 // ─────────────────────────────────────────────────────────────
 export const CONFIG = {
   firebase: {
-    apiKey: "AIzaSyDxEKP6HRvLQVHMiuLLbTHW8lSRdIPS7Oc",
-    authDomain: "bts-team-tool.firebaseapp.com",
-    projectId: "bts-team-tool",
-    storageBucket: "bts-team-tool.firebasestorage.app",
-    messagingSenderId: "906797804620",
-    appId: "1:906797804620:web:c93e1c3fb9318af35858e9",
+    apiKey: "AIzaSyAWFRcaTMp3KpUujrjHfi7_t3ad7C7xnaw",
+    authDomain: "bts-tool.firebaseapp.com",
+    projectId: "bts-tool",
+    storageBucket: "bts-tool.firebasestorage.app",
+    messagingSenderId: "529006140655",
+    appId: "1:529006140655:web:4819fce4208511216d4f1a",
   },
   // Google Apps Script web app (calendar sync, Sunday email, document storage)
-  appsScriptUrl: "https://script.google.com/macros/s/AKfycby0ZfyqNLwMOtX3RLgxrSFcLNvJ4RVNTNXXqHtGXVCm4NoeIurwQJNDZkqYFhWb77_4kw/exec",
+  appsScriptUrl: "__APPS_SCRIPT_URL__",
   currency: "EUR",
   locale: "en-GB",
 };

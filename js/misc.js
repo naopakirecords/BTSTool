@@ -1,11 +1,11 @@
-import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js";
-import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js";
-import { allConflicts, equipmentBusy } from "./conflicts.js";
-import { contractRow, bindContractRows } from "./people.js";
+import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=5";
+import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=5";
+import { allConflicts, equipmentBusy } from "./conflicts.js?v=5";
+import { contractRow, bindContractRows } from "./people.js?v=5";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDT, fmtTime, fmtDateShort, money, daysUntil, startOfDay, addDays, todayISO, hoursOf,
   TYPES, EQUIP_CATS, EQUIP_PREFIX, CONDITIONS, EQUIP_STATUS, DOC_CATS, fromInputs, toDateInput,
-} from "./util.js";
+} from "./util.js?v=5";
 
 // ─────────── Weekly summary ───────────
 export function weekRange(ref = Date.now()) {

@@ -42,3 +42,7 @@ In Google Calendar, a title starting with `Shoot:`, `Rec:` or `Mgmt:` goes to Pr
 | `callsheet.html` | public read-only call sheet |
 | `firestore.rules` | database security rules |
 | `apps-script/` | Google Calendar sync, Sunday email, Drive documents |
+
+## Releasing a change (cache-busting)
+Browsers cache files for ~10 minutes. After any change, bump the version everywhere in one go, e.g. from 5 to 6:
+`sed -i 's/?v=5/?v=6/g' index.html callsheet.html js/*.js`

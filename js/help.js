@@ -7,7 +7,7 @@ export function renderHelp(root) {
     <li><a href="#h-shoot">4. Logging a shoot</a></li><li><a href="#h-rec">5. Logging a recording session</a></li><li><a href="#h-clash">6. Double bookings</a></li>
     <li><a href="#h-mgmt">7. Management</a></li><li><a href="#h-meet">7b. Team meetings</a></li><li><a href="#h-art">8. Artists</a></li><li><a href="#h-contract">9. Contracts</a></li>
     <li><a href="#h-docs">10. Documents</a></li><li><a href="#h-eq">11. Equipment</a></li><li><a href="#h-loc">12. Locations</a></li>
-    <li><a href="#h-google">13. Google Calendar sync & tags</a></li><li><a href="#h-sum">14. Sunday summary</a></li><li><a href="#h-call">15. Call sheet links</a></li>
+    <li><a href="#h-links">12b. Links</a></li><li><a href="#h-google">13. Google Calendar sync & tags</a></li><li><a href="#h-sum">14. Sunday summary</a></li><li><a href="#h-call">15. Call sheet links</a></li>
     <li><a href="#h-money">16. Money</a></li><li><a href="#h-hist">17. History & activity log</a></li><li><a href="#h-acc">18. Accounts & passwords</a></li><li><a href="#h-tips">19. Tips & FAQ</a></li>
   </ul>
 
@@ -97,6 +97,9 @@ export function renderHelp(root) {
 
   <h2 id="h-loc">12. Locations</h2>
   <p>Saved places (studio, client houses, outdoor spots) with address, usual travel time (pre-fills new bookings) and notes like parking and access. Addresses open in Google Maps.</p>
+
+  <h2 id="h-links">12b. Links</h2>
+  <p>The <b>Links</b> page collects all our websites and accounts (the NAOPAKI site, socials, streaming profiles, tools) so anyone can open them in one tap or copy the address. Only <b>admins</b> can add, edit, reorder (with the Order number) or remove links; everyone else can open and copy them.</p>
 
   <h2 id="h-google">13. Google Calendar sync & tags</h2>
   <ul>

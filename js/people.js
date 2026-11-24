@@ -1,8 +1,8 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript } from "./store.js";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript } from "./store.js?v=5";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=5";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=5";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=5";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=5";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {

@@ -1,15 +1,16 @@
-import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js";
-import { S, startSync, stopSync, onChange } from "./store.js";
-import { renderCalendar, renderTypeList, openEventEditor } from "./events.js";
-import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js";
-import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js";
-import { renderHelp } from "./help.js";
-import { esc, $, $$, modal, toast } from "./util.js";
+import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=5";
+import { S, startSync, stopSync, onChange } from "./store.js?v=5";
+import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=5";
+import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=5";
+import { renderLinks } from "./links.js?v=5";
+import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=5";
+import { renderHelp } from "./help.js?v=5";
+import { esc, $, $$, modal, toast } from "./util.js?v=5";
 
 const app = document.getElementById("app");
 const NAV = [
   ["home", "🏠", "Home"], ["calendar", "📅", "Calendar"], ["production", "🎬", "Production"], ["audio", "🎙️", "Audio"], ["management", "📋", "Management"], ["meetings", "🤝", "Team meetings"],
-  ["artists", "🎤", "Artists"], ["docs", "📄", "Documents"], ["equipment", "🎥", "Equipment"], ["locations", "📍", "Locations"], "-",
+  ["artists", "🎤", "Artists"], ["docs", "📄", "Documents"], ["equipment", "🎥", "Equipment"], ["locations", "📍", "Locations"], ["links", "🔗", "Links"], "-",
   ["activity", "🕘", "Activity"], ["team", "👥", "Team"], ["help", "❓", "Help"], ["account", "⚙️", "My account"],
 ];
 
@@ -81,6 +82,7 @@ function render() {
       case "docs": renderDocs(view); break;
       case "equipment": renderEquipment(view); break;
       case "locations": renderLocations(view); break;
+      case "links": renderLinks(view); break;
       case "activity": renderActivity(view); break;
       case "team": renderTeam(view); break;
       case "help": renderHelp(view); break;

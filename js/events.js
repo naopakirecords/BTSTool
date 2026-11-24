@@ -1,10 +1,10 @@
-import { openDocUpload, openDoc } from "./misc.js";
-import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js";
-import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js";
+import { openDocUpload, openDoc } from "./misc.js?v=5";
+import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=5";
+import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=5";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, fmtDT, fmtDate, fmtDateShort, fmtTime, money, hoursOf, toDateInput, toTimeInput,
   fromInputs, TYPES, SUBTYPES, EQUIP_CATS, startOfDay, addDays, TYPE_ORDER, NO_GEAR, linkify,
-} from "./util.js";
+} from "./util.js?v=5";
 
 export const paidOf = (e) => (e.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
 export const owedOf = (e) => e.status === "cancelled" ? 0 : Math.max(0, (Number(e.price) || 0) - paidOf(e));
@@ -345,7 +345,7 @@ export function fmtChangeValue(f, v) {
   return String(v).length > 120 ? String(v).slice(0, 120) + "…" : String(v);
 }
 export function activityHTML(a) {
-  const col = { events: "", artists: "artist", contracts: "contract", equipment: "equipment", locations: "location", docs: "document", members: "team member" }[a.col] ?? a.col;
+  const col = { links: "link", events: "", artists: "artist", contracts: "contract", equipment: "equipment", locations: "location", docs: "document", members: "team member" }[a.col] ?? a.col;
   const ev = a.col === "events" ? byId("events", a.docId) : null;
   const what = ev ? (TYPES[ev.type]?.label.toLowerCase() || "event") : col;
   const ch = (a.changes || []).filter((c) => c.f !== "deleted").slice(0, 8).map((c) => `<div class="change"><b>${esc(FIELD_NAMES[c.f] || c.f)}</b>: ${esc(fmtChangeValue(c.f, c.from))} → ${esc(fmtChangeValue(c.f, c.to))}</div>`).join("");

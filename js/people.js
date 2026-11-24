@@ -1,8 +1,9 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=7";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=7";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=7";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=7";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=7";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=8";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=8";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=8";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=8";
+import { showWelcome } from "./onboard.js?v=8";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=8";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {
@@ -270,6 +271,7 @@ export function renderAccount(root) {
       <button class="btn primary" data-pw>Change password</button></div>
     ${S.me.role === "admin" ? `<div class="card"><h2>Google connection</h2><p class="muted">Calendar sync runs every minute and right after every change. The Sunday summary email goes out at 18:00.</p>
       <div class="btns"><button class="btn" data-sync>Sync now</button><button class="btn" data-sum>Send me the weekly summary now (test)</button></div></div>` : ""}
+    <div class="card"><h2>Install on this device</h2><p class="muted">Add BTS to your home screen so it opens like an app.</p><button class="btn" data-tour>📲 Show install steps & tour</button></div>
     <button class="btn danger" data-out>Sign out</button>`;
   $("[data-savename]", root).onclick = async () => { const n = $("[name=name]", root).value.trim(); if (n) { await save("members", S.me.id, { name: n }, n); toast("Saved"); } };
   $("[data-pw]", root).onclick = async () => {
@@ -283,6 +285,7 @@ export function renderAccount(root) {
     } catch (e) { toast(e.code === "auth/invalid-credential" || e.code === "auth/wrong-password" ? "Current password is wrong" : e.message, true); }
   };
   $("[data-out]", root).onclick = () => signOut(auth);
+  $("[data-tour]", root).onclick = () => showWelcome();
   const sy = $("[data-sync]", root); sy && (sy.onclick = async () => { try { sy.disabled = true; const r = await callScript("sync"); toast(r.message || "Synced"); } catch (e) { toast(e.message, true); } sy.disabled = false; });
   const su = $("[data-sum]", root); su && (su.onclick = async () => { try { su.disabled = true; await callScript("summaryTest"); toast("Summary sent to " + S.me.id); } catch (e) { toast(e.message, true); } su.disabled = false; });
 }

@@ -12,7 +12,7 @@
 <body>
 <div class="wrap" id="c"><div class="loading">Loading call sheet…</div></div>
 <script type="module">
-import { CONFIG } from "./js/config.js?v=7";
+import { CONFIG } from "./js/config.js?v=8";
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const el = document.getElementById("c");
 const t = new URLSearchParams(location.search).get("t");

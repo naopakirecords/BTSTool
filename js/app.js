@@ -1,11 +1,12 @@
-import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=7";
-import { S, startSync, stopSync, onChange } from "./store.js?v=7";
-import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=7";
-import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=7";
-import { renderLinks } from "./links.js?v=7";
-import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=7";
-import { renderHelp } from "./help.js?v=7";
-import { esc, $, $$, modal, toast } from "./util.js?v=7";
+import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=8";
+import { S, startSync, stopSync, onChange } from "./store.js?v=8";
+import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=8";
+import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=8";
+import { renderLinks } from "./links.js?v=8";
+import { showWelcome, seenWelcome } from "./onboard.js?v=8";
+import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=8";
+import { renderHelp } from "./help.js?v=8";
+import { esc, $, $$, modal, toast } from "./util.js?v=8";
 
 const app = document.getElementById("app");
 const NAV = [
@@ -116,5 +117,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
   shell();
-  startSync(() => { render(); maybeSundayPopup(); });
+  startSync(() => { render(); if (!seenWelcome()) showWelcome({ onDone: maybeSundayPopup }); else maybeSundayPopup(); });
 });
+
+if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

@@ -1,5 +1,6 @@
+import { showWelcome } from "./onboard.js?v=8";
 export function renderHelp(root) {
-  root.innerHTML = `<div class="topbar"><h1>Help</h1></div>
+  root.innerHTML = `<div class="topbar"><h1>Help</h1><button class="btn primary" data-tour>▶ Welcome tour & install steps</button></div>
   <div class="card help">
   <p>BTS is our private team tool. It keeps every shoot, recording session, artist, contract, document and piece of equipment in one place, and it stays in sync with our Google Calendar. Everything you change is saved instantly and appears on everyone's phone and computer within a second.</p>
   <ul class="toc">
@@ -143,5 +144,6 @@ export function renderHelp(root) {
     <li><b>Fix a clash with someone else's booking:</b> use “Open other booking” in the Clashes box.</li>
   </ul>
   </div>`;
+  root.querySelector('[data-tour]').onclick = () => showWelcome();
   root.querySelectorAll('.toc a').forEach((a) => a.onclick = (e) => { e.preventDefault(); root.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' }); });
 }

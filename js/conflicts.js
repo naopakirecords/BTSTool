@@ -1,5 +1,5 @@
-import { S, events, byId, memberName, artistName, equipLabel, locName } from "./store.js?v=10";
-import { fmtDT, fmtTime, startOfDay, addDays } from "./util.js?v=10";
+import { S, events, byId, memberName, artistName, equipLabel, locName } from "./store.js?v=11";
+import { fmtDT, fmtTime, startOfDay, addDays } from "./util.js?v=11";
 
 const active = (e) => !e.deleted && e.status !== "cancelled" && e.start && e.end;
 export const windowOf = (e) => { const t = (Number(e.travelMin) || 0) * 6e4; return [e.start - t, e.end + t]; };

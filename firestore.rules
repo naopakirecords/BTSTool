@@ -25,8 +25,9 @@ service cloud.firestore {
       allow read, create: if isMember();
       allow update, delete: if false; // history can't be rewritten
     }
+    // Everything else (artists, events, tasks, expenses, … and any future section): team members only.
     match /{col}/{id} {
-      allow read, write: if isMember() && col in ['artists', 'contracts', 'events', 'equipment', 'locations', 'docs', 'links', 'expenses'];
+      allow read, write: if isMember() && !(col in ['members', 'callsheets', 'activity']);
     }
   }
 }

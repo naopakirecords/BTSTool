@@ -1,11 +1,12 @@
-import { openDocUpload, openDoc } from "./misc.js?v=10";
-import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=10";
-import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=10";
-import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=10";
+import { openDocUpload, openDoc } from "./misc.js?v=11";
+import { openTaskEditor, relatedTasksHTML, bindTaskCards } from "./tasks.js?v=11";
+import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=11";
+import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=11";
+import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=11";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, fmtDT, fmtDate, fmtDateShort, fmtTime, money, hoursOf, toDateInput, toTimeInput,
   fromInputs, TYPES, SUBTYPES, EQUIP_CATS, startOfDay, addDays, TYPE_ORDER, NO_GEAR, linkify,
-} from "./util.js?v=10";
+} from "./util.js?v=11";
 
 export const paidOf = (e) => (e.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
 export const owedOf = (e) => e.status === "cancelled" ? 0 : Math.max(0, (Number(e.price) || 0) - paidOf(e));
@@ -90,9 +91,10 @@ export function openEventEditor(id, preset = {}) {
       <div data-payments></div>
       <button type="button" class="btn sm" data-addpay>+ Add payment</button>
     </div>
+    ${ex ? `<div class="section"><h3>✅ Tasks for this</h3><div class="card flat" style="margin:0" data-evtasks><div class="list">${relatedTasksHTML((t) => t.relatedType === "event" && t.eventId === ex.id)}</div></div></div>` : ""}
     ${ex && ex.source === "google" ? `<p class="dim" style="margin-top:12px">Added from Google Calendar.</p>` : ""}
     <div class="mf">
-      ${!isNew ? `<button class="btn danger" data-del>Delete</button><button class="btn" data-hist>History</button><button class="btn" data-share>Call sheet link</button><button class="btn" data-addexp2>💶 Add expense</button>` : ""}
+      ${!isNew ? `<button class="btn danger" data-del>Delete</button><button class="btn" data-hist>History</button><button class="btn" data-share>Call sheet link</button><button class="btn" data-addexp2>💶 Add expense</button><button class="btn" data-addtask>✅ Add task</button>` : ""}
       <span class="spacer"></span>
       <button class="btn" data-close>Cancel</button><button class="btn primary" data-save>Save</button>
     </div>`, { wide: true, onClose: () => unsub() });
@@ -236,6 +238,7 @@ export function openEventEditor(id, preset = {}) {
   }
   function toggleAllDay() { $$("[data-timef]", el).forEach((f) => (f.style.display = st.allDay ? "none" : "")); }
 
+  const evt = $("[data-evtasks]", el); evt && bindTaskCards(evt);
   renderType(); renderArtists(); renderLocations(); renderMembers(); renderEquip(); renderDocs(); renderPayments(); renderBal(); toggleAllDay(); renderConflicts();
   $("[data-updoc]", el).onclick = () => openDocUpload({ category: "Other", eventId: ex?.id || "", onDone: (id) => { st.docIds.push(id); setTimeout(renderDocs, 400); } });
 
@@ -290,6 +293,7 @@ export function openEventEditor(id, preset = {}) {
     };
     $("[data-hist]", el).onclick = () => historyModal(ex.id, ex.title);
     $("[data-share]", el).onclick = () => shareModal(ex.id);
+    $("[data-addtask]", el).onclick = () => openTaskEditor(null, { relatedType: "event", eventId: ex.id, artistId: ex.artistId || "" });
     $("[data-addexp2]", el).onclick = () => openExpenseEditor(null, { kind: "booking", eventId: ex.id, artistId: ex.artistId || "", date: toDateInput(ex.start), category: "" });
   }
 }
@@ -347,7 +351,7 @@ export function fmtChangeValue(f, v) {
   return String(v).length > 120 ? String(v).slice(0, 120) + "…" : String(v);
 }
 export function activityHTML(a) {
-  const col = { expenses: "expense", links: "link", events: "", artists: "artist", contracts: "contract", equipment: "equipment", locations: "location", docs: "document", members: "team member" }[a.col] ?? a.col;
+  const col = { tasks: "task", taskComments: "comment", expenses: "expense", links: "link", events: "", artists: "artist", contracts: "contract", equipment: "equipment", locations: "location", docs: "document", members: "team member" }[a.col] ?? a.col;
   const ev = a.col === "events" ? byId("events", a.docId) : null;
   const what = ev ? (TYPES[ev.type]?.label.toLowerCase() || "event") : col;
   const ch = (a.changes || []).filter((c) => c.f !== "deleted").slice(0, 8).map((c) => `<div class="change"><b>${esc(FIELD_NAMES[c.f] || c.f)}</b>: ${esc(fmtChangeValue(c.f, c.from))} → ${esc(fmtChangeValue(c.f, c.to))}</div>`).join("");

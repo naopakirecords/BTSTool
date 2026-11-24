@@ -1,5 +1,5 @@
-import { S } from "./store.js?v=10";
-import { esc, $, $$, modal } from "./util.js?v=10";
+import { S } from "./store.js?v=11";
+import { esc, $, $$, modal } from "./util.js?v=11";
 
 const KEY = "bts-welcome-v1";
 const NEWS_KEY = "bts-news-seen";
@@ -62,6 +62,14 @@ const EXPENSES_HELP = `<p>Log every cost in <b>Expenses</b> (＋ → Expense, or
   <li><b>Paid?</b> Tick it for a one-off; for repeating costs tick each payment as it's made. <b>Mark paid</b> buttons are everywhere.</li></ul>
   <p>Every due date shows in the <b>Calendar</b> as 💶 for everyone, overdue and this week's payments appear on <b>Home</b>, and the page shows monthly and yearly running costs.</p>`;
 
+export const TASKS_HELP = `<p>The <b>Tasks</b> board (✅ in the menu, and in the bottom bar on phones) is our shared to-do list:</p><ul>
+  <li><b>New task</b>: write what needs doing, optional details, due date and 🔥 priority.</li>
+  <li><b>Assigned to</b>: pick the person who has to do it, or leave it on <b>Nobody yet</b> so whoever has time can press <b>✋ I'll take it</b>.</li>
+  <li><b>Related to</b>: separately, link it to an <b>artist</b> or a <b>shoot / session / meeting</b> it's about. It then also shows on that artist's profile and inside that booking.</li>
+  <li><b>Stages</b>: ⬜ To do → 🔄 In progress → ✅ Done. Change the stage in the task, or just <b>tick the box</b> to mark it done.</li>
+  <li><b>Comments</b>: open a task to discuss it. Press <b>@Name</b> to tag a team member; they see “You were tagged” on Home and Tasks.</li>
+  <li>Filter by <b>My tasks</b> or <b>Open – unassigned</b>. Your tasks are also on Home.</li></ul>`;
+
 export const GCAL_HELP = `
   <p>You can add shoots, sessions and meetings straight from <b>Google Calendar</b> (phone app or calendar.google.com). Follow these steps so they land in the right place:</p>
   <ol>
@@ -92,6 +100,7 @@ export const GCAL_HELP = `
 
 /* What's new: add an entry here with every update; people who already did the tour get a pop-up once. */
 export const WHATS_NEW = [
+  { id: "2026-11-tasks", date: "Nov 2026", title: "✅ Tasks – shared to-do list", body: TASKS_HELP },
   { id: "2026-11-gcal-guide", date: "Nov 2026", title: "📅 How to add things from Google Calendar", body: GCAL_HELP },
   { id: "2026-11-expenses", date: "Nov 2026", title: "💶 Expenses", body: EXPENSES_HELP },
 ];
@@ -99,6 +108,7 @@ export const WHATS_NEW = [
 const SLIDES = () => [
   { icon: "📲", title: "First: install BTS on this device", body: `<p>BTS works in any browser, but installed it opens like a normal app, full screen, straight from your home screen.</p>${installSlide()}` },
   { icon: "📅", title: "Adding things from Google Calendar", body: GCAL_HELP },
+  { icon: "✅", title: "Tasks", body: TASKS_HELP },
   { icon: "🏠", title: "Home", body: `<p>Your daily overview:</p><ul><li><b>Double bookings</b> to fix, with a Resolve button</li><li>Items added in Google Calendar that still need <b>sorting</b></li><li><b>Contracts</b> expiring soon, and <b>unpaid</b> finished work</li><li>What's <b>coming up</b> and the plan for this week (on Sundays, next week pops up automatically)</li></ul><p>Quick buttons at the top add a shoot, recording, management item or meeting.</p>` },
   { icon: "📅", title: "Calendar", body: `<p>Month view of everything, colour-coded: <span class="t-shoot"><span class="tdot"></span></span> shoots, <span class="t-recording"><span class="tdot"></span></span> recordings, <span class="t-management"><span class="tdot"></span></span> management, <span class="t-meeting"><span class="tdot"></span></span> team meetings.</p><p>Tap a day to see its list and add something on that day.</p><p>It's synced both ways with the shared <b>BTS</b> Google calendar, which you also get in your own Google Calendar app. Only that calendar is synced, never your personal one.</p>` },
   { icon: "🎬", title: "Production & 🎙️ Audio", body: `<p><b>Production</b> = video shoots, <b>Audio</b> = recording sessions. For each one, log:</p><ul><li>Artist, date, start time, hours</li><li>Location + <b>travel time</b></li><li>Who from the team is there</li><li>Exact <b>equipment</b> items (each item has its own number, e.g. CAM-01)</li><li>Brief / songs, notes, price and payments</li></ul><p>The tool <b>won't save a double booking</b> (person, gear, artist or location, travel included) and suggests one-tap fixes. Open a saved shoot and tap <b>Call sheet link</b> to send a read-only page to the artist.</p>` },

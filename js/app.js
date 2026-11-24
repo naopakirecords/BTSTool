@@ -1,17 +1,18 @@
-import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=10";
-import { S, startSync, stopSync, onChange } from "./store.js?v=10";
-import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=10";
-import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=10";
-import { renderExpenses, openExpenseEditor } from "./expenses.js?v=10";
-import { renderLinks } from "./links.js?v=10";
-import { showWelcome, seenWelcome, maybeWhatsNew } from "./onboard.js?v=10";
-import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=10";
-import { renderHelp } from "./help.js?v=10";
-import { esc, $, $$, modal, toast } from "./util.js?v=10";
+import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=11";
+import { S, startSync, stopSync, onChange } from "./store.js?v=11";
+import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=11";
+import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=11";
+import { renderExpenses, openExpenseEditor } from "./expenses.js?v=11";
+import { renderTasks, openTaskEditor } from "./tasks.js?v=11";
+import { renderLinks } from "./links.js?v=11";
+import { showWelcome, seenWelcome, maybeWhatsNew } from "./onboard.js?v=11";
+import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=11";
+import { renderHelp } from "./help.js?v=11";
+import { esc, $, $$, modal, toast } from "./util.js?v=11";
 
 const app = document.getElementById("app");
 const NAV = [
-  ["home", "🏠", "Home"], ["calendar", "📅", "Calendar"], ["production", "🎬", "Production"], ["audio", "🎙️", "Audio"], ["management", "📋", "Management"], ["meetings", "🤝", "Team meetings"], ["expenses", "💶", "Expenses"],
+  ["home", "🏠", "Home"], ["calendar", "📅", "Calendar"], ["tasks", "✅", "Tasks"], ["production", "🎬", "Production"], ["audio", "🎙️", "Audio"], ["management", "📋", "Management"], ["meetings", "🤝", "Team meetings"], ["expenses", "💶", "Expenses"],
   ["artists", "🎤", "Artists"], ["docs", "📄", "Documents"], ["equipment", "🎥", "Equipment"], ["locations", "📍", "Locations"], ["links", "🔗", "Links"], "-",
   ["activity", "🕘", "Activity"], ["team", "👥", "Team"], ["help", "❓", "Help"], ["account", "⚙️", "My account"],
 ];
@@ -47,7 +48,7 @@ function shell() {
       <div class="dim" style="font-size:.8rem;padding:14px 12px">${esc(S.me.name)}${isAdmin ? " · admin" : ""}</div></aside>
     <main class="main" id="view"></main>
     <nav class="bottom"><a href="#/home" data-nav="home"><span class="ico">🏠</span>Home</a><a href="#/calendar" data-nav="calendar"><span class="ico">📅</span>Calendar</a>
-      <a href="#" class="plus" data-plus><span class="ico">＋</span></a><a href="#/artists" data-nav="artists"><span class="ico">🎤</span>Artists</a><a href="#" data-more><span class="ico">☰</span>More</a></nav></div>`;
+      <a href="#" class="plus" data-plus><span class="ico">＋</span></a><a href="#/tasks" data-nav="tasks"><span class="ico">✅</span>Tasks</a><a href="#" data-more><span class="ico">☰</span>More</a></nav></div>`;
   $("[data-plus]").onclick = (e) => { e.preventDefault(); plusMenu(); };
   $("[data-more]").onclick = (e) => {
     e.preventDefault();
@@ -56,7 +57,7 @@ function shell() {
   };
 }
 function plusMenu() {
-  const opts = [["🎬", "Shoot", () => openEventEditor(null, { type: "shoot" })], ["🎙️", "Recording session", () => openEventEditor(null, { type: "recording" })],
+  const opts = [["✅", "Task", () => openTaskEditor()], ["🎬", "Shoot", () => openEventEditor(null, { type: "shoot" })], ["🎙️", "Recording session", () => openEventEditor(null, { type: "recording" })],
     ["📋", "Drop / gig / artist meeting", () => openEventEditor(null, { type: "management" })], ["🤝", "Team meeting", () => openEventEditor(null, { type: "meeting" })], ["🎤", "Artist", () => openArtistEditor()], ["📝", "Contract", () => openContractEditor()],
     ["💶", "Expense", () => openExpenseEditor()], ["🎥", "Equipment item", () => openEquipEditor()], ["📄", "Upload document", () => openDocUpload()]];
   const m = modal(`<div class="mh"><h2>Add new</h2><button class="x" data-close>×</button></div><div class="drawer">${opts.map((o, i) => `<a href="#" data-i="${i}">${o[0]} ${o[1]}</a>`).join("")}</div>`);
@@ -85,6 +86,7 @@ function render() {
       case "equipment": renderEquipment(view); break;
       case "locations": renderLocations(view); break;
       case "links": renderLinks(view); break;
+      case "tasks": renderTasks(view); break;
       case "expenses": renderExpenses(view); break;
       case "activity": renderActivity(view); break;
       case "team": renderTeam(view); break;

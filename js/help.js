@@ -1,10 +1,10 @@
-import { showWelcome, showWhatsNew, GCAL_HELP } from "./onboard.js?v=10";
+import { showWelcome, showWhatsNew, GCAL_HELP, TASKS_HELP } from "./onboard.js?v=11";
 export function renderHelp(root) {
   root.innerHTML = `<div class="topbar"><h1>Help</h1><div class="btns"><button class="btn" data-news>✨ What&#39;s new</button><button class="btn primary" data-tour>▶ Welcome tour & install steps</button></div></div>
   <div class="card help">
   <p>BTS is our private team tool. It keeps every shoot, recording session, artist, contract, document and piece of equipment in one place, and it stays in sync with our Google Calendar. Everything you change is saved instantly and appears on everyone's phone and computer within a second.</p>
   <ul class="toc">
-    <li><a href="#h-start">1. Getting started</a></li><li><a href="#h-home">2. Home</a></li><li><a href="#h-cal">3. Calendar</a></li>
+    <li><a href="#h-start">1. Getting started</a></li><li><a href="#h-home">2. Home</a></li><li><a href="#h-tasks">2b. Tasks</a></li><li><a href="#h-cal">3. Calendar</a></li>
     <li><a href="#h-shoot">4. Logging a shoot</a></li><li><a href="#h-rec">5. Logging a recording session</a></li><li><a href="#h-clash">6. Double bookings</a></li>
     <li><a href="#h-mgmt">7. Management</a></li><li><a href="#h-meet">7b. Team meetings</a></li><li><a href="#h-exp">7c. Expenses</a></li><li><a href="#h-art">8. Artists</a></li><li><a href="#h-contract">9. Contracts</a></li>
     <li><a href="#h-docs">10. Documents</a></li><li><a href="#h-eq">11. Equipment</a></li><li><a href="#h-loc">12. Locations</a></li>
@@ -23,6 +23,10 @@ export function renderHelp(root) {
 
   <h2 id="h-home">2. Home</h2>
   <p>Your daily overview: double bookings that need fixing, items added in Google Calendar that still need sorting, contracts that expire soon, what's coming up, this week's plan, and finished work that hasn't been paid yet. On Sundays a pop-up shows the plan for the coming week the first time you open the tool that day.</p>
+
+  <h2 id="h-tasks">2b. Tasks (to-do list)</h2>
+  ${TASKS_HELP}
+  <p><b>Who does it vs. what it's about:</b> “Assigned to” is the person who has to complete it. “Related to” is the artist or booking it concerns. They're separate, so “Order Valentino's merch samples” can be related to Valentino and assigned to the manager.</p>
 
   <h2 id="h-cal">3. Calendar</h2>
   <ul>
@@ -136,7 +140,7 @@ export function renderHelp(root) {
     <li><b>My account</b>: change your display name and password, and sign out.</li>
     <li>Forgot your password? On the sign-in screen press “Forgot password?” and you'll get a reset email.</li>
     <li><b>Admin only (Team)</b>: add a member (name + email → they get the set-password email), make someone admin, deactivate an account (they can no longer sign in or see anything), resend the password email.</li>
-    <li><b>Members</b> can add and edit everything in the tool (bookings, artists, contracts, expenses, documents, equipment, locations, links) but can't manage accounts. Nobody can change how the tool works from inside it – that's only possible through the company GitHub and Google accounts.</li>
+    <li><b>Members</b> can add and edit everything in the tool (tasks, bookings, artists, contracts, expenses, documents, equipment, locations, links) but can't manage accounts. Nobody can change how the tool works from inside it – that's only possible through the company GitHub and Google accounts.</li>
   </ul>
 
   <h2 id="h-tips">19. Tips & FAQ</h2>

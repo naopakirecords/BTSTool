@@ -1,10 +1,11 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=10";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=10";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=10";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=10";
-import { showWelcome } from "./onboard.js?v=10";
-import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=10";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=10";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=11";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=11";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=11";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=11";
+import { showWelcome } from "./onboard.js?v=11";
+import { openTaskEditor, relatedTasksHTML, bindTaskCards } from "./tasks.js?v=11";
+import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=11";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=11";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {
@@ -83,6 +84,8 @@ export function renderArtist(root, id) {
           <div class="list">${contracts.map(contractRow).join("") || '<div class="empty">No contracts.</div>'}</div></div>
         <div class="card flat"><div style="padding:12px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)"><h2 style="margin:0;flex:1">Documents</h2><button class="btn sm" data-up>+ Upload</button></div>
           <div class="list">${docs.map(docRow).join("") || '<div class="empty">No documents.</div>'}</div></div>
+        <div class="card flat"><div style="padding:12px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)"><h2 style="margin:0;flex:1">✅ Tasks</h2><button class="btn sm" data-newt>+ Task</button></div>
+          <div class="list">${relatedTasksHTML((t) => t.artistId === id)}</div></div>
         <div class="card flat"><div style="padding:12px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)"><h2 style="margin:0;flex:1">💶 Expenses</h2><button class="btn sm" data-newx>+ Expense</button></div>
           <div class="list">${exps.map((x) => expenseRow({ x, d: x.freq === "once" ? x.date : null })).join("") || '<div class="empty">No expenses.</div>'}</div></div>
         <div class="card flat"><div style="padding:12px 14px;border-bottom:1px solid var(--line)"><h2 style="margin:0">Past work (${past.length})</h2></div>
@@ -96,6 +99,8 @@ export function renderArtist(root, id) {
   $("[data-newc]", root).onclick = () => openContractEditor(null, { artistId: id });
   $("[data-up]", root).onclick = () => openDocUpload({ artistId: id });
   bindEventRows(root); bindContractRows(root); bindDocRows(root); bindExpenseRows(root);
+  bindTaskCards(root);
+  $("[data-newt]", root).onclick = () => openTaskEditor(null, { relatedType: "artist", artistId: id });
   $("[data-newx]", root).onclick = () => openExpenseEditor(null, { kind: "artist", artistId: id });
 }
 
@@ -229,7 +234,7 @@ export function renderTeam(root) {
     <div class="alert info">📅 <b>Shared calendar:</b> everyone on this list automatically gets edit access to the one shared <b>BTS</b> Google calendar (Google emails them an invite and it shows up in their own Google Calendar). Only that calendar is synced with the tool – nobody's personal calendar is ever read. For this, a member's email must be a Google account (Gmail or Google Workspace).</div>
     <p class="muted">Only people on this list can sign in. There is no public sign-up – an admin adds each person here and they get an email to set their own password.</p>
     <div class="card"><h2>What each access level can do</h2><div class="kv">
-      <div><b>Member</b></div><div>Sees everything and can add, edit and delete shoots, sessions, meetings, artists, contracts, expenses, documents, equipment, locations and links. Can change their own name and password.</div>
+      <div><b>Member</b></div><div>Sees everything and can add, edit and delete tasks, shoots, sessions, meetings, artists, contracts, expenses, documents, equipment, locations and links. Can change their own name and password.</div>
       <div><b>Admin</b></div><div>Everything a member can do, plus: add and remove team accounts, give or take admin access, resend password emails, and use the Google sync tools (sync now, test the Sunday email).</div>
       <div><b>Nobody in the tool</b></div><div>How the tool itself works (its code, design, Firebase and Google settings) can't be changed from inside the tool at all – only through the company GitHub and Google accounts.</div></div></div>
     <div class="card flat"><div class="list">${list.map((x) => `<div class="item" style="cursor:default"><div class="body"><div class="t">${esc(x.name)} ${x.role === "admin" ? '<span class="badge acc">Admin</span>' : ""} ${x.active === false ? '<span class="badge bad">Deactivated</span>' : ""}</div>

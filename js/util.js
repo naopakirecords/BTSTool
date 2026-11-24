@@ -1,4 +1,4 @@
-import { CONFIG } from "./config.js?v=10";
+import { CONFIG } from "./config.js?v=11";
 
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 export const $ = (sel, root = document) => root.querySelector(sel);

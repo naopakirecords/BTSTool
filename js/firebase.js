@@ -5,9 +5,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-  collection, doc, onSnapshot, getDoc, setDoc, deleteDoc, writeBatch, query, orderBy, limit,
+  collection, doc, onSnapshot, getDoc, setDoc, deleteDoc, writeBatch, query, orderBy, limit, arrayUnion,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import { CONFIG } from "./config.js?v=10";
+import { CONFIG } from "./config.js?v=11";
 
 export const app = initializeApp(CONFIG.firebase);
 export const auth = getAuth(app);
@@ -22,7 +22,7 @@ export const db = _db;
 export {
   onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updatePassword,
   EmailAuthProvider, reauthenticateWithCredential,
-  collection, doc, onSnapshot, getDoc, setDoc, deleteDoc, writeBatch, query, orderBy, limit,
+  collection, doc, onSnapshot, getDoc, setDoc, deleteDoc, writeBatch, query, orderBy, limit, arrayUnion,
 };
 
 /** Create a login for a new team member without signing the admin out. */

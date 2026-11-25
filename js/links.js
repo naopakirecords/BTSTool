@@ -1,5 +1,5 @@
-import { S, byId, save, remove } from "./store.js?v=11";
-import { esc, $, $$, modal, toast, confirmBox, opt, val } from "./util.js?v=11";
+import { S, byId, save, remove } from "./store.js?v=12";
+import { esc, $, $$, modal, toast, confirmBox, opt, val } from "./util.js?v=12";
 
 export const LINK_CATS = ["Our websites", "Social media", "Streaming & music", "Tools & accounts", "Other"];
 const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (_) { return u; } };

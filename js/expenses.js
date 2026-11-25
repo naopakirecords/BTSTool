@@ -1,6 +1,6 @@
-import { S, byId, events, save, remove, artistName, memberName } from "./store.js?v=11";
-import { historyModal } from "./events.js?v=11";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, money, fmtDay, fmtDateShort, todayISO, daysUntil, TYPES } from "./util.js?v=11";
+import { S, byId, events, save, remove, artistName, memberName } from "./store.js?v=12";
+import { historyModal } from "./events.js?v=12";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, money, fmtDay, fmtDateShort, todayISO, daysUntil, TYPES } from "./util.js?v=12";
 
 export const EXP_KINDS = {
   company: { label: "Company / subscription", icon: "🏢" },

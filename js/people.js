@@ -1,11 +1,11 @@
-import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=11";
-import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=11";
-import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=11";
-import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=11";
-import { showWelcome } from "./onboard.js?v=11";
-import { openTaskEditor, relatedTasksHTML, bindTaskCards } from "./tasks.js?v=11";
-import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=11";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=11";
+import { S, byId, events, save, remove, live, artistName, memberName, setRaw, callScript, scriptReady } from "./store.js?v=12";
+import { createLogin, auth, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, signOut } from "./firebase.js?v=12";
+import { eventRow, bindEventRows, openEventEditor, owedOf, paidOf, historyModal, activityHTML } from "./events.js?v=12";
+import { openDocUpload, docRow, bindDocRows } from "./misc.js?v=12";
+import { showWelcome } from "./onboard.js?v=12";
+import { openTaskEditor, relatedTasksHTML, bindTaskCards } from "./tasks.js?v=12";
+import { expenseRow, bindExpenseRows, openExpenseEditor, occurrences } from "./expenses.js?v=12";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDay, money, todayISO, daysUntil, TYPES, CONTRACT_TYPES, linkify, hoursOf } from "./util.js?v=12";
 
 // ─────────── Artists ───────────
 export function artistStats(a) {

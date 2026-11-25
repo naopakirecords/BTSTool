@@ -1,14 +1,14 @@
-import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=11";
-import { S, startSync, stopSync, onChange } from "./store.js?v=11";
-import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=11";
-import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=11";
-import { renderExpenses, openExpenseEditor } from "./expenses.js?v=11";
-import { renderTasks, openTaskEditor } from "./tasks.js?v=11";
-import { renderLinks } from "./links.js?v=11";
-import { showWelcome, seenWelcome, maybeWhatsNew } from "./onboard.js?v=11";
-import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=11";
-import { renderHelp } from "./help.js?v=11";
-import { esc, $, $$, modal, toast } from "./util.js?v=11";
+import { auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, db, doc, getDoc } from "./firebase.js?v=12";
+import { S, startSync, stopSync, onChange } from "./store.js?v=12";
+import { renderCalendar, renderTypeList, openEventEditor } from "./events.js?v=12";
+import { renderArtists, renderArtist, renderManagement, renderTeam, renderAccount, openArtistEditor, openContractEditor } from "./people.js?v=12";
+import { renderExpenses, openExpenseEditor } from "./expenses.js?v=12";
+import { renderTasks, openTaskEditor } from "./tasks.js?v=12";
+import { renderLinks } from "./links.js?v=12";
+import { showWelcome, seenWelcome, maybeWhatsNew } from "./onboard.js?v=12";
+import { renderHome, renderDocs, renderEquipment, renderLocations, renderActivity, maybeSundayPopup, openDocUpload, openEquipEditor } from "./misc.js?v=12";
+import { renderHelp } from "./help.js?v=12";
+import { esc, $, $$, modal, toast } from "./util.js?v=12";
 
 const app = document.getElementById("app");
 const NAV = [

@@ -1,4 +1,4 @@
-import { showWelcome, showWhatsNew, GCAL_HELP, TASKS_HELP } from "./onboard.js?v=11";
+import { showWelcome, showWhatsNew, GCAL_HELP, TASKS_HELP } from "./onboard.js?v=12";
 export function renderHelp(root) {
   root.innerHTML = `<div class="topbar"><h1>Help</h1><div class="btns"><button class="btn" data-news>✨ What&#39;s new</button><button class="btn primary" data-tour>▶ Welcome tour & install steps</button></div></div>
   <div class="card help">

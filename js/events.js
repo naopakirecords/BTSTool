@@ -1,12 +1,12 @@
-import { openDocUpload, openDoc } from "./misc.js?v=11";
-import { openTaskEditor, relatedTasksHTML, bindTaskCards } from "./tasks.js?v=11";
-import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=11";
-import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=11";
-import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=11";
+import { openDocUpload, openDoc } from "./misc.js?v=12";
+import { openTaskEditor, relatedTasksHTML, bindTaskCards } from "./tasks.js?v=12";
+import { expensesOnDay, expenseRow, bindExpenseRows, openExpenseEditor } from "./expenses.js?v=12";
+import { S, byId, events, live, save, memberName, artistName, equipLabel, locName, setRaw, delRaw, uid, onChange } from "./store.js?v=12";
+import { findConflicts, freeMembers, freeEquipment, nextFreeSlot, equipmentBusy, memberBusy } from "./conflicts.js?v=12";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, fmtDT, fmtDate, fmtDateShort, fmtTime, money, hoursOf, toDateInput, toTimeInput,
   fromInputs, TYPES, SUBTYPES, EQUIP_CATS, startOfDay, addDays, TYPE_ORDER, NO_GEAR, linkify,
-} from "./util.js?v=11";
+} from "./util.js?v=12";
 
 export const paidOf = (e) => (e.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
 export const owedOf = (e) => e.status === "cancelled" ? 0 : Math.max(0, (Number(e.price) || 0) - paidOf(e));

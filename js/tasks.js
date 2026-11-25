@@ -1,7 +1,15 @@
-import { S, byId, events, save, remove, memberName, artistName, setRaw } from "./store.js?v=11";
-import { arrayUnion } from "./firebase.js?v=11";
-import { historyModal } from "./events.js?v=11";
-import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDay, fmtDateShort, todayISO, daysUntil, ago, TYPES, linkify } from "./util.js?v=11";
+import { S, byId, events, save, remove, memberName, artistName, setRaw } from "./store.js?v=12";
+import { arrayUnion } from "./firebase.js?v=12";
+import { historyModal } from "./events.js?v=12";
+import { esc, $, $$, modal, toast, confirmBox, opt, val, fmtDay, fmtDateShort, todayISO, daysUntil, ago, TYPES, linkify } from "./util.js?v=12";
+
+const saveErr = (e) => {
+  console.error(e);
+  toast(e && e.code === "permission-denied"
+    ? "Couldn't save: the database rules haven't been updated yet. The admin needs to publish the new rule in Firebase (see the instructions in chat)."
+    : "Couldn't save: " + (e && e.message || e), true);
+};
+async function safe(fn) { try { return await fn(); } catch (e) { saveErr(e); } }
 
 export const STAGES = { todo: "To do", doing: "In progress", done: "Done" };
 const STAGE_ICON = { todo: "⬜", doing: "🔄", done: "✅" };
@@ -13,6 +21,7 @@ export const myOpenTasks = () => S.tasks.filter((t) => t.assignee === S.me?.id &
 export const openUnassigned = () => S.tasks.filter((t) => !t.assignee && t.status !== "done");
 
 function relatedLabel(t) {
+  if (t.relatedType === "admin") return "🗂️ Admin";
   if (t.relatedType === "artist" && t.artistId) return "🎤 " + (artistName(t.artistId) || "(removed artist)");
   if (t.relatedType === "event" && t.eventId) { const e = byId("events", t.eventId); return e ? `${TYPES[e.type]?.icon || ""} ${e.title} · ${fmtDateShort(e.start)}` : "(removed booking)"; }
   return "";
@@ -33,14 +42,14 @@ export function taskCard(t, { compact = false } = {}) {
 }
 export function bindTaskCards(root) {
   $$("[data-tick]", root).forEach((c) => { c.onclick = (e) => e.stopPropagation(); c.onchange = () => setStage(c.dataset.tick, c.checked ? "done" : "todo"); });
-  $$("[data-take]", root).forEach((b) => b.onclick = async (e) => { e.stopPropagation(); const t = byId("tasks", b.dataset.take); await save("tasks", t.id, { assignee: S.me.id, status: t.status === "todo" ? "doing" : t.status }, t.title); toast("It's yours – moved to In progress"); });
+  $$("[data-take]", root).forEach((b) => b.onclick = async (e) => { e.stopPropagation(); const t = byId("tasks", b.dataset.take); if (!(await safe(() => save("tasks", t.id, { assignee: S.me.id, status: t.status === "todo" ? "doing" : t.status }, t.title)))) return; toast("It's yours – moved to In progress"); });
   $$("[data-task]", root).forEach((r) => r.onclick = () => openTaskEditor(r.dataset.task));
 }
 async function setStage(id, status) {
   const t = byId("tasks", id);
   const d = { status };
   if (status === "done") { d.doneAt = Date.now(); d.doneBy = S.me.id; } else { d.doneAt = 0; d.doneBy = ""; }
-  await save("tasks", id, d, t.title);
+  if (!(await safe(() => save("tasks", id, d, t.title)))) return;
   toast(status === "done" ? "Ticked off ✅" : "Moved to " + STAGES[status]);
 }
 
@@ -50,14 +59,14 @@ export function renderTasks(root) {
   let list = [...S.tasks];
   if (who === "mine") list = list.filter((t) => t.assignee === S.me.id);
   if (who === "open") list = list.filter((t) => !t.assignee);
-  if (relF) list = list.filter((t) => (relF === "artist" ? t.relatedType === "artist" : relF === "event" ? t.relatedType === "event" : !t.relatedType));
+  if (relF) list = list.filter((t) => (relF === "none" ? !t.relatedType : t.relatedType === relF));
   const sort = (a, b) => (b.priority === "high") - (a.priority === "high") || (a.due || "9999").localeCompare(b.due || "9999") || a.createdAt - b.createdAt;
   const col = (s) => list.filter((t) => (t.status || "todo") === s).sort(s === "done" ? (a, b) => (b.doneAt || 0) - (a.doneAt || 0) : sort);
   const ment = unreadMentions();
   root.innerHTML = `<div class="topbar"><h1>Tasks</h1><button class="btn primary" data-new>+ New task</button></div>
     ${ment.length ? `<div class="alert info">💬 You were tagged in ${ment.length} comment${ment.length > 1 ? "s" : ""}: ${[...new Set(ment.map((c) => c.taskId))].map((id) => `<a href="#" data-open="${esc(id)}">${esc(byId("tasks", id)?.title || "")}</a>`).join(", ")}</div>` : ""}
     <div class="row" style="align-items:center;margin-bottom:12px"><div class="tabs" style="margin:0;flex:0 0 auto">${[["all", "Everyone"], ["mine", "My tasks"], ["open", "Open – unassigned"]].map(([k, l]) => `<button data-who="${k}" class="${who === k ? "on" : ""}">${l}</button>`).join("")}</div>
-      <select data-rel style="max-width:220px">${opt("", "Related to anything", relF)}${opt("artist", "🎤 Artist tasks", relF)}${opt("event", "🎬 Shoot / session tasks", relF)}${opt("none", "General tasks", relF)}</select></div>
+      <select data-rel style="max-width:220px">${opt("", "Related to anything", relF)}${opt("artist", "🎤 Artist tasks", relF)}${opt("event", "🎬 Shoot / session tasks", relF)}${opt("admin", "🗂️ Admin tasks", relF)}${opt("none", "General tasks", relF)}</select></div>
     <div class="tabs board-tabs">${Object.entries(STAGES).map(([k, l]) => `<button data-ms="${k}" class="${mobileStage === k ? "on" : ""}">${STAGE_ICON[k]} ${l} (${col(k).length})</button>`).join("")}</div>
     <div class="board">${Object.entries(STAGES).map(([k, l]) => `<div class="board-col ${mobileStage === k ? "on" : ""}" data-col="${k}">
       <div class="board-h">${STAGE_ICON[k]} ${l} <span class="dim">${col(k).length}</span></div>
@@ -91,7 +100,7 @@ export function openTaskEditor(id, preset = {}) {
     <div class="row"><div class="field"><label>Assigned to (who does it)</label><select name="assignee">${opt("", "Nobody yet – anyone with time can take it", st.assignee)}${S.members.filter((x) => x.active !== false || x.id === st.assignee).map((x) => opt(x.id, x.name + (x.id === S.me.id ? " (me)" : ""), st.assignee)).join("")}</select></div>
       <div class="field" style="flex:0 1 160px"><label>Due date (optional)</label><input type="date" name="due" value="${esc(st.due || "")}"></div>
       <div class="field" style="flex:0 1 140px"><label>Priority</label><select name="priority">${opt("normal", "Normal", st.priority)}${opt("high", "🔥 High", st.priority)}</select></div></div>
-    <div class="field"><label>Related to (what it's about – separate from who does it)</label><select name="relatedType">${opt("", "Nothing specific", st.relatedType)}${opt("artist", "🎤 An artist", st.relatedType)}${opt("event", "🎬 A shoot / session / meeting", st.relatedType)}</select></div>
+    <div class="field"><label>Related to (what it's about – separate from who does it)</label><select name="relatedType">${opt("", "Nothing specific", st.relatedType)}${opt("admin", "🗂️ Admin (company paperwork, accounts, finances…)", st.relatedType)}${opt("artist", "🎤 An artist", st.relatedType)}${opt("event", "🎬 A shoot / session / meeting", st.relatedType)}</select></div>
     <div class="field" data-artf><select name="artistId">${opt("", "— choose artist —", st.artistId)}${arts.map((a) => opt(a.id, a.name + (a.managed ? " ★" : ""), st.artistId)).join("")}</select></div>
     <div class="field" data-evf><select name="eventId">${opt("", "— choose shoot / session —", st.eventId)}${evs.map((e) => opt(e.id, `${fmtDateShort(e.start)} · ${TYPES[e.type]?.icon || ""} ${e.title}`, st.eventId)).join("")}</select></div>
     ${id ? `<div class="section"><h3>💬 Comments</h3><div data-comments></div>
@@ -118,13 +127,14 @@ export function openTaskEditor(id, preset = {}) {
       cs.filter((c) => (c.mentions || []).includes(S.me.id) && !(c.seenBy || []).includes(S.me.id)).forEach((c) => setRaw("taskComments", c.id, { seenBy: arrayUnion(S.me.id) }).catch(() => {}));
     };
     drawComments();
-    import("./store.js?v=11").then((mod) => { unsub = mod.onChange(() => { if (document.body.contains(el)) drawComments(); }); });
+    import("./store.js?v=12").then((mod) => { unsub = mod.onChange(() => { if (document.body.contains(el)) drawComments(); }); });
     $$("[data-tag]", el).forEach((b) => b.onclick = () => { const ta = $("[name=comment]", el); ta.value = (ta.value && !ta.value.endsWith(" ") ? ta.value + " " : ta.value) + "@" + b.dataset.tag + " "; ta.focus(); });
     $("[data-post]", el).onclick = async () => {
       const text = $("[name=comment]", el).value.trim();
       if (!text) return;
       const mentions = mentionRe().filter((x) => text.includes("@" + x.name)).map((x) => x.id);
-      await save("taskComments", null, { taskId: id, text, by: S.me.id, byName: S.me.name, ts: Date.now(), mentions, seenBy: [S.me.id] }, `on “${t0.title}”`);
+      const ok = await safe(() => save("taskComments", null, { taskId: id, text, by: S.me.id, byName: S.me.name, ts: Date.now(), mentions, seenBy: [S.me.id] }, `on “${t0.title}”`));
+      if (!ok) return;
       $("[name=comment]", el).value = "";
       toast(mentions.length ? `Posted – ${mentions.map(memberName).join(", ")} will see it` : "Posted");
     };
@@ -146,7 +156,9 @@ export function openTaskEditor(id, preset = {}) {
       relatedType: rel, artistId: rel === "artist" ? val(el, "artistId") : ev?.artistId || "", eventId: rel === "event" ? val(el, "eventId") : "" };
     if (d.status === "done" && t0.status !== "done") { d.doneAt = Date.now(); d.doneBy = S.me.id; }
     if (d.status !== "done") { d.doneAt = 0; d.doneBy = ""; }
-    const nid = await save("tasks", id, d, title);
+    const btn = $("[data-save]", el); btn.disabled = true; btn.textContent = "Saving…";
+    const nid = await safe(() => save("tasks", id, d, title));
+    if (!nid) { btn.disabled = false; btn.textContent = id ? "Save" : "Create task"; return; }
     toast(id ? "Saved" : d.assignee && d.assignee !== S.me.id ? `Task created and assigned to ${memberName(d.assignee)}` : "Task created");
     m.close();
   };

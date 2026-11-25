@@ -1,13 +1,13 @@
-import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=11";
-import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=11";
-import { allConflicts, equipmentBusy } from "./conflicts.js?v=11";
-import { myOpenTasks, openUnassigned, unreadMentions, taskCard, bindTaskCards } from "./tasks.js?v=11";
-import { unpaidDue, expenseRow, bindExpenseRows, occurrences } from "./expenses.js?v=11";
-import { contractRow, bindContractRows } from "./people.js?v=11";
+import { S, byId, events, save, remove, artistName, memberName, equipLabel, callScript, scriptReady } from "./store.js?v=12";
+import { eventRow, bindEventRows, openEventEditor, historyModal, activityHTML, owedOf } from "./events.js?v=12";
+import { allConflicts, equipmentBusy } from "./conflicts.js?v=12";
+import { myOpenTasks, openUnassigned, unreadMentions, taskCard, bindTaskCards } from "./tasks.js?v=12";
+import { unpaidDue, expenseRow, bindExpenseRows, occurrences } from "./expenses.js?v=12";
+import { contractRow, bindContractRows } from "./people.js?v=12";
 import {
   esc, $, $$, modal, toast, confirmBox, opt, val, fmtDate, fmtDT, fmtTime, fmtDateShort, money, daysUntil, startOfDay, addDays, todayISO, hoursOf,
   TYPES, EQUIP_CATS, EQUIP_PREFIX, CONDITIONS, EQUIP_STATUS, DOC_CATS, fromInputs, toDateInput,
-} from "./util.js?v=11";
+} from "./util.js?v=12";
 
 // ─────────── Weekly summary ───────────
 export function weekRange(ref = Date.now()) {

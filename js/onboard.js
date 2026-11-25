@@ -1,5 +1,5 @@
-import { S } from "./store.js?v=11";
-import { esc, $, $$, modal } from "./util.js?v=11";
+import { S } from "./store.js?v=12";
+import { esc, $, $$, modal } from "./util.js?v=12";
 
 const KEY = "bts-welcome-v1";
 const NEWS_KEY = "bts-news-seen";
@@ -65,7 +65,7 @@ const EXPENSES_HELP = `<p>Log every cost in <b>Expenses</b> (＋ → Expense, or
 export const TASKS_HELP = `<p>The <b>Tasks</b> board (✅ in the menu, and in the bottom bar on phones) is our shared to-do list:</p><ul>
   <li><b>New task</b>: write what needs doing, optional details, due date and 🔥 priority.</li>
   <li><b>Assigned to</b>: pick the person who has to do it, or leave it on <b>Nobody yet</b> so whoever has time can press <b>✋ I'll take it</b>.</li>
-  <li><b>Related to</b>: separately, link it to an <b>artist</b> or a <b>shoot / session / meeting</b> it's about. It then also shows on that artist's profile and inside that booking.</li>
+  <li><b>Related to</b>: separately, mark what it's about: <b>🗂️ Admin</b> (company paperwork, accounts, finances), an <b>artist</b>, or a <b>shoot / session / meeting</b>. It then also shows on that artist's profile and inside that booking.</li>
   <li><b>Stages</b>: ⬜ To do → 🔄 In progress → ✅ Done. Change the stage in the task, or just <b>tick the box</b> to mark it done.</li>
   <li><b>Comments</b>: open a task to discuss it. Press <b>@Name</b> to tag a team member; they see “You were tagged” on Home and Tasks.</li>
   <li>Filter by <b>My tasks</b> or <b>Open – unassigned</b>. Your tasks are also on Home.</li></ul>`;
